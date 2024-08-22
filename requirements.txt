@@ -4,3 +4,4 @@ mysql-connector-python
 pandas
 plotly
 webdriver-manager
+matplotlib
