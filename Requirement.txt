@@ -1,0 +1,6 @@
+streamlit
+selenium
+mysql-connector-python
+pandas
+plotly
+webdriver-manager
