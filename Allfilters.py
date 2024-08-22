@@ -106,7 +106,7 @@ def allfilterfunc():
         optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
     # Step 2: Display additional filters based on initial selection
-    if filter1:
+    #if filter1:
         st.write("Additional Filters")
         bus_route = get_route(filter1)
 
