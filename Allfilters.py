@@ -8,7 +8,7 @@ def get_state():
     # Create a cursor object
     cursor = mydb.cursor()
     # Define the query to get distinct states from bus_routes
-    query = "SELECT DISTINCT state FROM bus_routes"
+    query = "SELECT DISTINCT states FROM bus_routes"
     # Execute the query
     cursor.execute(query)
     # Fetch all the results
@@ -26,7 +26,7 @@ def get_route(state=None):
     # Create a cursor object
     cursor = mydb.cursor()
     # Define the query to get distinct states from bus_routes
-    query = "SELECT DISTINCT route_name FROM bus_routes where state = %s"
+    query = "SELECT DISTINCT route_name FROM bus_routes where states = %s"
     params = [state]
     # Execute the query
     cursor.execute(query, tuple(params))
@@ -42,7 +42,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     # Create a cursor object
     cursor = mydb.cursor()
     # Define the base query
-    query = f"SELECT * FROM bus_routes WHERE state = %s"
+    query = f"SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
     # Add filters to the query if they are selected
