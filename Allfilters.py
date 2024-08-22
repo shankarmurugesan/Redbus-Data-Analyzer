@@ -96,9 +96,12 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
 
 def allfilterfunc():
-    # Ensure the filter1 value is stored in session_state
+    
+    if 'selected_state' not in st.session_state:
+        st.session_state['selected_state'] = ""
+
     state = get_state()
-    filter1 = st.selectbox("State Name", options=[""] + state, key="selected_state")
+    st.session_state['selected_state'] = st.selectbox("State Name", options=[""] + state, key="selected_state")
 
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
