@@ -15,12 +15,13 @@ from DataClean_DB_Insert import datacleandbinsert
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.options import Options
+from webdriver_manager.firefox import GeckoDriverManager
 
 def scrabdata(unique_key):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
-    firefox_options.binary_location = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"  # Specify the path to Firefox binary
-
+    os.environ['GH_TOKEN'] = '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'
+    firefox_options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"  # Specify the path to Firefox binary
 
     # Determine state-specific details
     state_map = {
