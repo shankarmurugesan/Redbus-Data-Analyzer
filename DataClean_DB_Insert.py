@@ -9,6 +9,7 @@ def create_connection():
     try:
         mydb = mysql.connector.connect(
             host="localhost",
+            port=3306,
             user="root",
             password="",  # use your own password
             database="redbus",
@@ -20,7 +21,7 @@ def create_connection():
         return None
 def datacleandbinsert(statename):
     # Set the correct path to the directory
-    directory = f'D:/Project/'  # Update the path here
+    directory = f'Project/'  # Update the path here
 
     # Check if the directory exists
     if not os.path.exists(directory):
