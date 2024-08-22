@@ -19,8 +19,8 @@ def get_state():
     return state
 
 def get_route(state=None):
-    if state is None:
-        return []  # Return an empty list if no state is provided
+    # if state is None:
+    #     return []  # Return an empty list if no state is provided
     # Establish a connection to the MySQL database
     mydb = create_connection()
     # Create a cursor object
@@ -33,9 +33,11 @@ def get_route(state=None):
     # Fetch all the results
     bus_route = [row[0] for row in cursor.fetchall()]
     # Close the cursor and connection
+    print(bus_route)
     cursor.close()
     mydb.close()
     return bus_route
+    
 def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None,seats=None,busfare=None):
     # Establish a connection to the MySQL database
     mydb = create_connection()
@@ -104,7 +106,7 @@ def allfilterfunc():
         optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
     # Step 2: Display additional filters based on initial selection
-    if filter1:
+    if filter1 and filter1 != "":
         st.write("Additional Filters")
         bus_route = get_route(filter1)
 
