@@ -37,7 +37,7 @@ def scrabdata(unique_key):
     }
 
     stateroute, statename = state_map.get(unique_key, ("pepsu", "Punjab"))
-    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=firefox_options)
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()))
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(f'https://www.redbus.in/online-booking/{stateroute}/?utm_source=rtchometile')
     driver.maximize_window()
