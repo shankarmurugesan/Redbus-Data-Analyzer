@@ -12,11 +12,11 @@ def get_state():
     # Execute the query
     cursor.execute(query)
     # Fetch all the results
-    states = [row[0] for row in cursor.fetchall()]
+    state = [row[0] for row in cursor.fetchall()]
     # Close the cursor and connection
     cursor.close()
     mydb.close()
-    return states
+    return state
 
 def get_route(state=None):
     if state is None:
