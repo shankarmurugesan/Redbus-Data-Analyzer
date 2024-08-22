@@ -20,7 +20,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 def scrabdata(unique_key):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
-    os.environ['GH_TOKEN'] = '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'
+    os.environ['GH_TOKEN'] = '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'
     firefox_options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"  # Specify the path to Firefox binary
 
     # Determine state-specific details
