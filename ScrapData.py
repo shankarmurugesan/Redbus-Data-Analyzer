@@ -18,11 +18,10 @@ from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager
 
 def scrabdata(unique_key):
+    os.environ['GH_TOKEN'] = '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'
     firefox_options = Options()
     firefox_options.add_argument("--headless")
-    os.environ['GH_TOKEN'] = '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'
     firefox_options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"  # Specify the path to Firefox binary
-
     # Determine state-specific details
     state_map = {
         "Chandigarh_CTU": ("chandigarh-transport-undertaking-ctu", "Chandigarh"),
@@ -37,9 +36,9 @@ def scrabdata(unique_key):
     }
 
     stateroute, statename = state_map.get(unique_key, ("pepsu", "Punjab"))
-    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()))
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=firefox_options)
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.get(f'https://www.redbus.in/online-booking/{stateroute}/?utm_source=rtchometile')
+    driver.get(f'https://www.redbus.in/online-booking/{stateroute}/')
     driver.maximize_window()
     wait = WebDriverWait(driver, 10)  # Increase wait time for stability
 
