@@ -95,7 +95,7 @@ def datacleandbinsert(statename):
                 row['busname'], row['bustype'], row['departing_time'], row['duration'],
                 row['reaching_time'], row['star_rating'], row['price'],
                 row['seat_availability'], row['route_name'], row['route_link'],
-                row['state'], row['operator']
+                row['states'], row['operator']
             ))
         # Commit the transaction
         mydb.commit()
