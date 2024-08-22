@@ -12,13 +12,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from DataClean_DB_Insert import datacleandbinsert
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.options import Options
 
 def scrabdata(unique_key):
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in headless mode
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
-    chrome_options.add_argument("--no-sandbox")  # Required in some environments
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+    firefox_options = Options()
+    firefox_options.add_argument("--headless")
 
     # Determine state-specific details
     state_map = {
@@ -34,7 +34,8 @@ def scrabdata(unique_key):
     }
 
     stateroute, statename = state_map.get(unique_key, ("pepsu", "Punjab"))
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=firefox_options)
+    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(f'https://www.redbus.in/online-booking/{stateroute}/?utm_source=rtchometile')
     driver.maximize_window()
     wait = WebDriverWait(driver, 10)  # Increase wait time for stability
