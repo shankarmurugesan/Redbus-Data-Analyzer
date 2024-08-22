@@ -19,7 +19,7 @@ from selenium.webdriver.firefox.options import Options
 def scrabdata(unique_key):
     firefox_options = Options()
     firefox_options.add_argument("--headless")
-    firefox_options.binary_location = "C:\Program Files\Mozilla Firefox\firefox.exe"  # Specify the path to Firefox binary
+    firefox_options.binary_location = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"  # Specify the path to Firefox binary
 
 
     # Determine state-specific details
