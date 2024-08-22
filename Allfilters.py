@@ -96,22 +96,20 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
 
 def allfilterfunc():
-    if 'filter1' not in st.session_state:
-        st.session_state['filter1'] = ""
-    if 'filter6' not in st.session_state:
-        st.session_state['filter6'] = ""
+    # Ensure the filter1 value is stored in session_state
+    state = get_state()
+    filter1 = st.selectbox("State Name", options=[""] + state, key="selected_state")
+
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
     with col1:
-        state = get_state()
-        filter1 = st.selectbox("State Name", options=[""] + state)
+        filter1 = st.session_state["selected_state"]
     with col2:
         # Static list for optional filter
         optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
     # Step 2: Display additional filters based on initial selection
-    if st.session_state['filter1']:
-        bus_route = get_route(st.session_state['filter1'])
+    if filter1:
         st.write("Additional Filters")
         bus_route = get_route(filter1)
 
