@@ -13,6 +13,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from DataClean_DB_Insert import datacleandbinsert
 
 def scrabdata(unique_key):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
+    chrome_options.add_argument("--no-sandbox")  # Required in some environments
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+
     # Determine state-specific details
     state_map = {
         "Chandigarh_CTU": ("chandigarh-transport-undertaking-ctu", "Chandigarh"),
