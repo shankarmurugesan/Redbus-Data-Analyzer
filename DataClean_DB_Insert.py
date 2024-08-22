@@ -8,10 +8,10 @@ import os
 def create_connection():
     try:
         mydb = mysql.connector.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="",  # use your own password
+            host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+            port=4000,
+            user="3dThprF9Dbe3P8c.root",
+            password="IDtIXLlb6Io3Lh87",  # use your own password
             database="redbus",
         )
         if mydb.is_connected():
