@@ -2,49 +2,61 @@ import pandas as pd
 import streamlit as st
 import mysql.connector
 from DataClean_DB_Insert import create_connection
-def get_state():
+
+def get_state_and_routes():
+    """
+    Fetch distinct states and their corresponding routes from the database.
+    """
     # Establish a connection to the MySQL database
     mydb = create_connection()
     # Create a cursor object
     cursor = mydb.cursor()
-    # Define the query to get distinct states from bus_routes
-    query = "SELECT DISTINCT states FROM bus_routes"
+    # Define the query to get distinct states and routes
+    query = "SELECT DISTINCT states, route_name FROM bus_routes"
     # Execute the query
     cursor.execute(query)
     # Fetch all the results
-    state = [row[0] for row in cursor.fetchall()]
+    state_route = cursor.fetchall()
     # Close the cursor and connection
     cursor.close()
     mydb.close()
-    return state
 
-def get_route(state=None):
-    # if state is None:
-    #     return []  # Return an empty list if no state is provided
+    # Separate states and routes
+    state_list = list(set([row[0] for row in state_route]))  # Unique states
+    route_dict = {}
+    for state, route in state_route:
+        if state not in route_dict:
+            route_dict[state] = []
+        route_dict[state].append(route)
+
+    return state_list, route_dict
+
+def get_operator():
+    """
+    Fetch distinct bus operators from the database.
+    """
     # Establish a connection to the MySQL database
     mydb = create_connection()
     # Create a cursor object
     cursor = mydb.cursor()
-    # Define the query to get distinct states from bus_routes
-    query = "SELECT DISTINCT route_name FROM bus_routes where states = %s"
-    params = [state]
+    # Define the query to get distinct bus operators
+    query = "SELECT DISTINCT operator FROM bus_routes"
     # Execute the query
-    cursor.execute(query, tuple(params))
+    cursor.execute(query)
     # Fetch all the results
-    bus_route = [row[0] for row in cursor.fetchall()]
+    operator = [row[0] for row in cursor.fetchall()]
     # Close the cursor and connection
-    print(bus_route)
     cursor.close()
     mydb.close()
-    return bus_route
-    
-def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None,seats=None,busfare=None):
+    return operator
+
+def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, seats=None, busfare=None):
     # Establish a connection to the MySQL database
     mydb = create_connection()
     # Create a cursor object
     cursor = mydb.cursor()
     # Define the base query
-    query = f"SELECT * FROM bus_routes WHERE states = %s"
+    query = "SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
     # Add filters to the query if they are selected
@@ -94,7 +106,6 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
     return df
 
-
 def allfilterfunc():
     # Initialize session state defaults before creating widgets
     if 'filter1' not in st.session_state:
@@ -117,15 +128,17 @@ def allfilterfunc():
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
     with col1:
-        state = get_state()
-        filter1 = st.selectbox("State Name", options=[""] + state, key='filter1')  # Use key for session state
+        state_list, route_dict = get_state_and_routes()
+        filter1 = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
     with col2:
-        # Static list for optional filter
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"], key='optional_filter')
+        operator_list = get_operator()
+        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
 
     # Step 2: Display additional filters based on initial selection
     st.write("Additional Filters")
-    bus_route = get_route(st.session_state['filter1'])  # Use st.session_state for logic control
+
+    # Get routes for the selected state
+    bus_route = route_dict.get(st.session_state['filter1'], [])
 
     col7, col8 = st.columns(2)
     with col7:
@@ -144,8 +157,7 @@ def allfilterfunc():
     with col6:
         filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
 
-
- # Mapping filter3 to corresponding SQL conditions
+    # Mapping filter3 to corresponding SQL conditions
     bus_fare = None
     if filter7 == "< 500":
         bus_fare = "price < 500"
@@ -192,7 +204,24 @@ def allfilterfunc():
     elif filter5 == "More than 4":
         Seats_avail = "> 4"
 
-    # Call your function with the applied filters
-    data = get_filtered_data(st.session_state['filter1'], filter6, optional_filter, DepartureCond, BusTypeCond, ratings_cond, Seats_avail, bus_fare)
-    st.dataframe(data)
+    # Step 4: Display the "Search" button
+    if st.button("Search"):
+        st.subheader("Filtered Results")
+        filtered_df = get_filtered_data(
+            statename=st.session_state['filter1'],  # Use the selected state
+            route=st.session_state['filter6'],
+            operator=st.session_state['optional_filter'],
+            departure_time=DepartureCond,
+            bus_type=BusTypeCond,
+            ratings=ratings_cond,
+            seats=Seats_avail,
+            busfare=bus_fare
+        )
+
+        # Check if the DataFrame is empty and display a message
+        if filtered_df.empty:
+            st.write("No results found for the selected filters.")
+        else:
+            # Display the filtered DataFrame
+            st.dataframe(filtered_df)
 
