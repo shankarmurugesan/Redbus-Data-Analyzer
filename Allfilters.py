@@ -5,24 +5,26 @@ from DataClean_DB_Insert import create_connection
 
 def get_state_and_routes():
     """
-    Fetch distinct states and their corresponding routes from the database.
+    Fetch distinct routes for hardcoded states from the database.
     """
+    # Hardcoded states
+    state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
+
     # Establish a connection to the MySQL database
     mydb = create_connection()
     # Create a cursor object
     cursor = mydb.cursor()
-    # Define the query to get distinct states and routes
-    query = "SELECT DISTINCT states, route_name FROM bus_routes"
-    # Execute the query
-    cursor.execute(query)
+    # Define the query to get routes for the hardcoded states
+    query = "SELECT DISTINCT states, route_name FROM bus_routes WHERE states IN (%s)" % ','.join(['%s'] * len(state_list))
+    # Execute the query with the hardcoded states
+    cursor.execute(query, tuple(state_list))
     # Fetch all the results
     state_route = cursor.fetchall()
     # Close the cursor and connection
     cursor.close()
     mydb.close()
 
-    # Separate states and routes
-    state_list = list(set([row[0] for row in state_route]))  # Unique states
+    # Separate routes by state
     route_dict = {}
     for state, route in state_route:
         if state not in route_dict:
@@ -131,17 +133,10 @@ def allfilterfunc():
         state_list, route_dict = get_state_and_routes()
         filter1 = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
 
+    # Swapped positions of Bus Route and Bus Operator dropdowns
     with col2:
-        # Only get bus routes if a state is selected
-        if st.session_state['filter1']:
-            bus_route = route_dict.get(st.session_state['filter1'], [])
-            # Maintain selected route if available
-            if bus_route:
-                filter6 = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
-            else:
-                st.write("No routes available for the selected state.")
-        else:
-            st.write("Please select a state to see available routes.")
+        bus_route = route_dict.get(st.session_state['filter1'], [])
+        filter6 = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
 
     st.write("Additional Filters")
 
@@ -230,5 +225,4 @@ def allfilterfunc():
         else:
             # Display the filtered DataFrame
             st.dataframe(filtered_df)
-
 
