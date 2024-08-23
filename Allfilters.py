@@ -125,24 +125,23 @@ def allfilterfunc():
     if 'filter7' not in st.session_state:
         st.session_state['filter7'] = ""
 
-    # Mandatory filter starts here
+ # Mandatory filter starts here
     col1, col2 = st.columns(2)
     with col1:
         state_list, route_dict = get_state_and_routes()
         filter1 = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
+    
+    # Swapped positions of Bus Route and Bus Operator dropdowns
     with col2:
-        operator_list = get_operator()
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
+        bus_route = route_dict.get(st.session_state['filter1'], [])
+        filter6 = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
 
-    # Step 2: Display additional filters based on initial selection
     st.write("Additional Filters")
-
-    # Get routes for the selected state
-    bus_route = route_dict.get(st.session_state['filter1'], [])
 
     col7, col8 = st.columns(2)
     with col7:
-        filter6 = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
+        operator_list = get_operator()
+        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
     with col8:
         filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
 
