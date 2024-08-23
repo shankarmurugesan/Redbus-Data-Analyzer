@@ -124,26 +124,31 @@ def allfilterfunc():
         st.session_state['optional_filter'] = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"], key='optional_filter')
 
     # Step 2: Display additional filters based on initial selection
-    #if filter1:
+    if filter1:
         st.write("Additional Filters")
         bus_route = get_route(filter1)
         
+       # Step 2: Display additional filters based on initial selection
+        st.write("Additional Filters")
+        bus_route = get_route(st.session_state['filter1'])
+    
         col7, col8 = st.columns(2)
         with col7:
-            filter6 = st.selectbox("Bus Route", options=[""] + bus_route)
+            st.session_state['filter6'] = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
         with col8:
-            filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"])
-
+            st.session_state['filter7'] = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
+    
         col3, col4 = st.columns(2)
         with col3:
-            filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"])
+            st.session_state['filter2'] = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"], key='filter2')
         with col4:
-            filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"])
+            st.session_state['filter3'] = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"], key='filter3')
         col5, col6 = st.columns(2)
         with col5:
-            filter4 = st.selectbox("Travellers Ratings", options=["", "4 * & Above", "3 * To 4 *", "Below 3 *"])
+            st.session_state['filter4'] = st.selectbox("Travellers Ratings", options=["", "4 * & Above", "3 * To 4 *", "Below 3 *"], key='filter4')
         with col6:
-            filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"])
+            st.session_state['filter5'] = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
+
 
         # Mapping filter3 to corresponding SQL conditions
         bus_fare = None
