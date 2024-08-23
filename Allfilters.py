@@ -131,12 +131,12 @@ def allfilterfunc():
     col1, col2 = st.columns(2)
     with col1:
         state_list, route_dict = get_state_and_routes()
-        filter1 = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
+        selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
 
-    # Swapped positions of Bus Route and Bus Operator dropdowns
+    # Update bus routes based on the selected state
     with col2:
-        bus_route = route_dict.get(st.session_state['filter1'], [])
-        filter6 = st.selectbox("Bus Route", options=[""] + bus_route, key='filter6')
+        bus_route_options = route_dict.get(selected_state, [])
+        selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
 
