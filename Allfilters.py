@@ -103,7 +103,10 @@ def allfilterfunc():
 
     # Update bus routes based on the selected state
     with col2:
-        bus_route_options = route_dict.get(selected_state, [])
+        if selected_state:
+            bus_route_options = route_dict.get(selected_state, [])
+        else:
+            bus_route_options = []
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
@@ -185,6 +188,7 @@ def allfilterfunc():
         elif st.session_state['filter5'] == "More than 4":
             seats_cond = "> 4"
 
+        # Apply the filters
         filtered_df = get_filtered_data(
             statename=st.session_state['filter1'],
             route=st.session_state['filter6'],
@@ -196,8 +200,8 @@ def allfilterfunc():
             busfare=bus_fare
         )
 
-        if filtered_df.empty:
-            st.write("No data available for the selected filters.")
+        if not filtered_df.empty:
+            st.write("Filtered Data")
+            st.dataframe(filtered_df)
         else:
-            st.write(filtered_df)
-
+            st.write("No matching data found. Please adjust your filters and try again.")
