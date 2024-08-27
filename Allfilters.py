@@ -26,7 +26,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     params = [statename]
 
     # Conditionally add additional filters
-    if route:
+    if route and route != "":
         query += " AND route_name = %s"
         params.append(route)
     if operator:
@@ -65,7 +65,6 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
     return df
 
-
 # Main filter function
 def allfilterfunc():
     # Initialize session state defaults if not set
@@ -88,10 +87,10 @@ def allfilterfunc():
 
     # Get route options based on the selected state
     route_dict = get_routes(selected_state)
-    bus_route_options = route_dict.get(selected_state, [])
+    bus_route_options = [""] + route_dict.get(selected_state, [])
     
     with col2:
-        selected_route = st.selectbox("Bus Route", options=[""],+bus_route_options, key='filter6')
+        selected_route = st.selectbox("Bus Route", options=bus_route_options, key='filter6')
 
     st.write("Additional Filters")
 
@@ -165,7 +164,7 @@ def allfilterfunc():
         # Fetch and display the filtered data
         filtered_df = get_filtered_data(
             statename=st.session_state['filter1'],
-            route=st.session_state['filter6'],
+            route=st.session_state['filter6'] if st.session_state['filter6'] else None,
             operator=st.session_state['optional_filter'],
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
@@ -179,4 +178,3 @@ def allfilterfunc():
             st.dataframe(filtered_df)
         else:
             st.write("No matching data found. Please adjust your filters and try again.")
-
