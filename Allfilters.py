@@ -68,14 +68,22 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 # Main filter function
 def allfilterfunc():
     # Initialize session state defaults if not set
-    st.session_state.setdefault('filter1', "")
-    st.session_state.setdefault('filter6', "")
-    st.session_state.setdefault('optional_filter', "")
-    st.session_state.setdefault('filter2', "")
-    st.session_state.setdefault('filter3', "")
-    st.session_state.setdefault('filter4', "")
-    st.session_state.setdefault('filter5', "")
-    st.session_state.setdefault('filter7', "")
+    if 'filter1' not in st.session_state:
+        st.session_state.filter1 = ""
+    if 'filter6' not in st.session_state:
+        st.session_state.filter6 = ""
+    if 'optional_filter' not in st.session_state:
+        st.session_state.optional_filter = ""
+    if 'filter2' not in st.session_state:
+        st.session_state.filter2 = ""
+    if 'filter3' not in st.session_state:
+        st.session_state.filter3 = ""
+    if 'filter4' not in st.session_state:
+        st.session_state.filter4 = ""
+    if 'filter5' not in st.session_state:
+        st.session_state.filter5 = ""
+    if 'filter7' not in st.session_state:
+        st.session_state.filter7 = ""
 
     # List of available states
     state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
@@ -90,7 +98,7 @@ def allfilterfunc():
     bus_route_options = [""] + route_dict.get(selected_state, [])
     
     with col2:
-        selected_route = st.selectbox("Bus Route", options=bus_route_options, key='filter6')
+        selected_route = st.selectbox("Bus Route", options=bus_route_options, key='filter6', index=bus_route_options.index(st.session_state.filter6) if st.session_state.filter6 in bus_route_options else 0)
 
     st.write("Additional Filters")
 
