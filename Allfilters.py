@@ -135,7 +135,10 @@ def allfilterfunc():
 
     # Update bus routes based on the selected state
     with col2:
-        bus_route_options = route_dict.get(selected_state, [])
+        if selected_state:
+            bus_route_options = route_dict.get(selected_state, [])
+        else:
+            bus_route_options = []
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
@@ -199,30 +202,18 @@ def allfilterfunc():
         ratings_cond = "< 3"
 
     # Mapping filter5 to corresponding SQL conditions
-    Seats_avail = None
+    seats_cond = None
     if filter5 == "Less than 4":
-        Seats_avail = "< 4"
+        seats_cond = "< 4"
     elif filter5 == "More than 4":
-        Seats_avail = "> 4"
+        seats_cond = ">= 4"
 
-    # Step 4: Display the "Search" button
-    if st.button("Search"):
-        st.subheader("Filtered Results")
-        filtered_df = get_filtered_data(
-            statename=st.session_state['filter1'],  # Use the selected state
-            route=st.session_state['filter6'],
-            operator=st.session_state['optional_filter'],
-            departure_time=DepartureCond,
-            bus_type=BusTypeCond,
-            ratings=ratings_cond,
-            seats=Seats_avail,
-            busfare=bus_fare
-        )
-
-        # Check if the DataFrame is empty and display a message
-        if filtered_df.empty:
-            st.write("No results found for the selected filters.")
+    submit = st.button("Submit", key='submit')
+    if submit:
+        df = get_filtered_data(statename=selected_state, route=selected_route, operator=optional_filter,
+                               departure_time=DepartureCond, bus_type=BusTypeCond, ratings=ratings_cond,
+                               seats=seats_cond, busfare=bus_fare)
+        if df.empty:
+            st.write("No data available for the selected filters.")
         else:
-            # Display the filtered DataFrame
-            st.dataframe(filtered_df)
-
+            st.write(df)
