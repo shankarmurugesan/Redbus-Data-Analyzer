@@ -91,7 +91,7 @@ def allfilterfunc():
     bus_route_options = route_dict.get(selected_state, [])
     
     with col2:
-        selected_route = st.selectbox("Bus Route", options=bus_route_options, key='filter6')
+        selected_route = st.selectbox("Bus Route", options=[""],+bus_route_options, key='filter6')
 
     st.write("Additional Filters")
 
