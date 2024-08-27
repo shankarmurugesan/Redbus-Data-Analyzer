@@ -78,7 +78,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
         query += " AND route_name = %s"
         params.append(route)
     if busfare:
-        query += " AND  " + busfare
+        query += " AND " + busfare
 
     # Execute the query
     cursor.execute(query, tuple(params))
@@ -110,37 +110,33 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
 def allfilterfunc():
     # Initialize session state defaults before creating widgets
-    filter_keys = {
-        'filter1': "",
-        'filter6': "",
-        'optional_filter': "",
-        'filter2': "",
-        'filter3': "",
-        'filter4': "",
-        'filter5': "",
-        'filter7': ""
-    }
-    for key, default_value in filter_keys.items():
-        if key not in st.session_state:
-            st.session_state[key] = default_value
+    if 'filter1' not in st.session_state:
+        st.session_state['filter1'] = ""
+    if 'filter6' not in st.session_state:
+        st.session_state['filter6'] = ""
+    if 'optional_filter' not in st.session_state:
+        st.session_state['optional_filter'] = ""
+    if 'filter2' not in st.session_state:
+        st.session_state['filter2'] = ""
+    if 'filter3' not in st.session_state:
+        st.session_state['filter3'] = ""
+    if 'filter4' not in st.session_state:
+        st.session_state['filter4'] = ""
+    if 'filter5' not in st.session_state:
+        st.session_state['filter5'] = ""
+    if 'filter7' not in st.session_state:
+        st.session_state['filter7'] = ""
 
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
     with col1:
         state_list, route_dict = get_state_and_routes()
-        selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
+        selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')
 
     # Update bus routes based on the selected state
     with col2:
-        if st.session_state['filter1']:
-            bus_route_options = route_dict.get(st.session_state['filter1'], [])
-        else:
-            bus_route_options = []
-
-        # Retain the previous selection if it still exists in the new options
-        if st.session_state['filter6'] not in bus_route_options:
-            st.session_state['filter6'] = ""
-
+        # Ensure the route selection is retained if possible
+        bus_route_options = route_dict.get(st.session_state['filter1'], [])
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
