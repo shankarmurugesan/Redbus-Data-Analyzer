@@ -135,7 +135,6 @@ def allfilterfunc():
 
     # Update bus routes based on the selected state
     with col2:
-        # Ensure the route selection is retained if possible
         bus_route_options = route_dict.get(st.session_state['filter1'], [])
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
@@ -210,11 +209,18 @@ def allfilterfunc():
     # Trigger search button
     search_button = st.button("Search")
     if search_button:
-        df = get_filtered_data(statename=st.session_state.get('filter1'), route=st.session_state.get('filter6'),
-                               operator=st.session_state.get('optional_filter'),
-                               departure_time=DepartureCond, bus_type=BusTypeCond, ratings=ratings_cond,
-                               seats=seats_cond, busfare=bus_fare)
+        df = get_filtered_data(
+            statename=st.session_state.get('filter1'),
+            route=st.session_state.get('filter6'),
+            operator=st.session_state.get('optional_filter'),
+            departure_time=DepartureCond,
+            bus_type=BusTypeCond,
+            ratings=ratings_cond,
+            seats=seats_cond,
+            busfare=bus_fare
+        )
         if df.empty:
             st.write("No data available for the selected filters.")
         else:
             st.write(df)
+
