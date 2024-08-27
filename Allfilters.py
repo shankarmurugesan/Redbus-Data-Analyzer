@@ -4,9 +4,6 @@ import mysql.connector
 from DataClean_DB_Insert import create_connection
 
 def get_state_and_routes():
-    """
-    Fetch distinct routes for hardcoded states from the database.
-    """
     state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
 
     mydb = create_connection()
@@ -26,9 +23,6 @@ def get_state_and_routes():
     return state_list, route_dict
 
 def get_operator():
-    """
-    Fetch distinct bus operators from the database.
-    """
     mydb = create_connection()
     cursor = mydb.cursor()
     query = "SELECT DISTINCT operator FROM bus_routes"
@@ -82,7 +76,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
-    # Initialize session state defaults before creating widgets
+    # Initialize session state defaults if not set
     if 'filter1' not in st.session_state:
         st.session_state['filter1'] = ""
     if 'filter6' not in st.session_state:
@@ -100,15 +94,16 @@ def allfilterfunc():
     if 'filter7' not in st.session_state:
         st.session_state['filter7'] = ""
 
+    state_list, route_dict = get_state_and_routes()
+
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
     with col1:
-        state_list, route_dict = get_state_and_routes()
         selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')
 
     # Update bus routes based on the selected state
     with col2:
-        bus_route_options = route_dict.get(st.session_state['filter1'], [])
+        bus_route_options = route_dict.get(selected_state, [])
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
@@ -132,7 +127,7 @@ def allfilterfunc():
     with col6:
         filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
 
-    # Ensure that selected values persist
+    # Ensure session state reflects selected values
     st.session_state['filter1'] = selected_state
     st.session_state['filter6'] = selected_route
     st.session_state['optional_filter'] = optional_filter
@@ -144,58 +139,57 @@ def allfilterfunc():
 
     # Mapping filter7 to corresponding SQL conditions
     bus_fare = None
-    if st.session_state.get('filter7') == "< 500":
+    if st.session_state['filter7'] == "< 500":
         bus_fare = "price < 500"
-    elif st.session_state.get('filter7') == "500 - 1000":
+    elif st.session_state['filter7'] == "500 - 1000":
         bus_fare = "price BETWEEN '500' AND '1000'"
-    elif st.session_state.get('filter7') == "> 1000":
+    elif st.session_state['filter7'] == "> 1000":
         bus_fare = "price > 1000"
 
     # Mapping filter2 to corresponding SQL conditions
     DepartureCond = None
-    if st.session_state.get('filter2') == "06:00 - 12:00 Morning":
+    if st.session_state['filter2'] == "06:00 - 12:00 Morning":
         DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-    elif st.session_state.get('filter2') == "12:00 - 18:00 Afternoon":
+    elif st.session_state['filter2'] == "12:00 - 18:00 Afternoon":
         DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-    elif st.session_state.get('filter2') == "18:00 - 24:00 Evening":
+    elif st.session_state['filter2'] == "18:00 - 24:00 Evening":
         DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-    elif st.session_state.get('filter2') == "00:00 - 06:00 Night":
+    elif st.session_state['filter2'] == "00:00 - 06:00 Night":
         DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
     # Mapping filter3 to corresponding SQL conditions
     BusTypeCond = None
-    if st.session_state.get('filter3') == "Seater":
+    if st.session_state['filter3'] == "Seater":
         BusTypeCond = "%Seater%"
-    elif st.session_state.get('filter3') == "Sleeper":
+    elif st.session_state['filter3'] == "Sleeper":
         BusTypeCond = "%Sleeper%"
-    elif st.session_state.get('filter3') == "AC":
+    elif st.session_state['filter3'] == "AC":
         BusTypeCond = "%A/C%"
-    elif st.session_state.get('filter3') == "NonAC":
+    elif st.session_state['filter3'] == "NonAC":
         BusTypeCond = "%Non AC%"
 
     # Mapping filter4 to corresponding SQL conditions
     ratings_cond = None
-    if st.session_state.get('filter4') == "4 * & Above":
+    if st.session_state['filter4'] == "4 * & Above":
         ratings_cond = ">= 4"
-    elif st.session_state.get('filter4') == "3 * To 4 *":
+    elif st.session_state['filter4'] == "3 * To 4 *":
         ratings_cond = "BETWEEN 3 AND 4"
-    elif st.session_state.get('filter4') == "Below 3 *":
+    elif st.session_state['filter4'] == "Below 3 *":
         ratings_cond = "< 3"
 
     # Mapping filter5 to corresponding SQL conditions
     seats_cond = None
-    if st.session_state.get('filter5') == "Less than 4":
+    if st.session_state['filter5'] == "Less than 4":
         seats_cond = "< 4"
-    elif st.session_state.get('filter5') == "More than 4":
+    elif st.session_state['filter5'] == "More than 4":
         seats_cond = ">= 4"
 
     # Trigger search button
-    search_button = st.button("Search")
-    if search_button:
+    if st.button("Search"):
         df = get_filtered_data(
-            statename=st.session_state.get('filter1'),
-            route=st.session_state.get('filter6'),
-            operator=st.session_state.get('optional_filter'),
+            statename=st.session_state['filter1'],
+            route=st.session_state['filter6'],
+            operator=st.session_state['optional_filter'],
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
             ratings=ratings_cond,
@@ -206,3 +200,4 @@ def allfilterfunc():
             st.write("No data available for the selected filters.")
         else:
             st.write(df)
+
