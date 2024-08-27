@@ -191,3 +191,9 @@ def allfilterfunc():
             busfare=bus_fare
         )
 
+        if not filtered_df.empty:
+            st.write("Filtered Data")
+            st.dataframe(filtered_df)
+        else:
+            st.write("No matching data found. Please adjust your filters and try again.")
+
