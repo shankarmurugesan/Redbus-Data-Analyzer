@@ -110,22 +110,19 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
 def allfilterfunc():
     # Initialize session state defaults before creating widgets
-    if 'filter1' not in st.session_state:
-        st.session_state['filter1'] = ""
-    if 'optional_filter' not in st.session_state:
-        st.session_state['optional_filter'] = ""
-    if 'filter2' not in st.session_state:
-        st.session_state['filter2'] = ""
-    if 'filter3' not in st.session_state:
-        st.session_state['filter3'] = ""
-    if 'filter4' not in st.session_state:
-        st.session_state['filter4'] = ""
-    if 'filter5' not in st.session_state:
-        st.session_state['filter5'] = ""
-    if 'filter6' not in st.session_state:
-        st.session_state['filter6'] = ""
-    if 'filter7' not in st.session_state:
-        st.session_state['filter7'] = ""
+    filter_keys = {
+        'filter1': "",
+        'filter6': "",
+        'optional_filter': "",
+        'filter2': "",
+        'filter3': "",
+        'filter4': "",
+        'filter5': "",
+        'filter7': ""
+    }
+    for key, default_value in filter_keys.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
 
     # Mandatory filter starts here
     col1, col2 = st.columns(2)
@@ -161,7 +158,7 @@ def allfilterfunc():
     with col6:
         filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
 
-    # Mapping filter3 to corresponding SQL conditions
+    # Mapping filter7 to corresponding SQL conditions
     bus_fare = None
     if filter7 == "< 500":
         bus_fare = "price < 500"
