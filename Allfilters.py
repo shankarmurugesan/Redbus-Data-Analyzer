@@ -9,7 +9,7 @@ def get_routes(state):
     cursor = mydb.cursor()
     query = "SELECT DISTINCT route_name FROM bus_routes WHERE states = %s"
     cursor.execute(query, (state,))
-    state_route = cursor.fetchall()
+    state_route = cursor.fetchall()    
     cursor.close()
     mydb.close()
 
@@ -78,21 +78,18 @@ def allfilterfunc():
     st.session_state.setdefault('filter5', "")
     st.session_state.setdefault('filter7', "")
 
-    # List of available states (This can be replaced with a dynamic fetch if needed)
+    # List of available states
     state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
-    
+
     # User interface for filtering options
     col1, col2 = st.columns(2)
     with col1:
         selected_state = st.selectbox("State Name", options=state_list, key='filter1')
 
-    # Update bus routes based on the selected state
-    if selected_state:
-        route_dict = get_routes(selected_state)
-        bus_route_options = route_dict.get(selected_state, [])
-    else:
-        bus_route_options = []
-
+    # Get route options based on the selected state
+    route_dict = get_routes(selected_state)
+    bus_route_options = route_dict.get(selected_state, [])
+    
     with col2:
         selected_route = st.selectbox("Bus Route", options=bus_route_options, key='filter6')
 
@@ -182,3 +179,4 @@ def allfilterfunc():
             st.dataframe(filtered_df)
         else:
             st.write("No matching data found. Please adjust your filters and try again.")
+
