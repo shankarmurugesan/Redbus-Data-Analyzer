@@ -103,7 +103,7 @@ def allfilterfunc():
 
     col7, col8 = st.columns(2)
     with col7:
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
+        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["","Private","Government"], key='optional_filter')
     with col8:
         filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
 
