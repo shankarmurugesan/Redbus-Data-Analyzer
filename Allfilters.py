@@ -127,7 +127,7 @@ def allfilterfunc():
     with col6:
         filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
 
-    # Ensure session state reflects selected values
+    # Update session state after widget creation
     st.session_state['filter1'] = selected_state
     st.session_state['filter6'] = selected_route
     st.session_state['optional_filter'] = optional_filter
@@ -184,12 +184,11 @@ def allfilterfunc():
     elif st.session_state['filter5'] == "More than 4":
         seats_cond = ">= 4"
 
-    # Trigger search button
     if st.button("Search"):
         df = get_filtered_data(
-            statename=st.session_state['filter1'],
-            route=st.session_state['filter6'],
-            operator=st.session_state['optional_filter'],
+            statename=st.session_state.get('filter1'),
+            route=st.session_state.get('filter6'),
+            operator=st.session_state.get('optional_filter'),
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
             ratings=ratings_cond,
@@ -200,4 +199,3 @@ def allfilterfunc():
             st.write("No data available for the selected filters.")
         else:
             st.write(df)
-
