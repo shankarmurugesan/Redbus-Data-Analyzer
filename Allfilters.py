@@ -22,20 +22,10 @@ def get_state_and_routes():
 
     return state_list, route_dict
 
-def get_operator():
-    mydb = create_connection()
-    cursor = mydb.cursor()
-    query = "SELECT DISTINCT operator FROM bus_routes"
-    cursor.execute(query)
-    operator = [row[0] for row in cursor.fetchall()]
-    cursor.close()
-    mydb.close()
-    return operator
-
 def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, seats=None, busfare=None):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT * FROM bus_routes WHERE states = %s"
+    query = "SELECT * FROM bus_routes WHERE states = %s and route_name = %s"
     params = [statename]
 
     if operator:
@@ -113,7 +103,6 @@ def allfilterfunc():
 
     col7, col8 = st.columns(2)
     with col7:
-        operator_list = get_operator()
         optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
     with col8:
         filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
