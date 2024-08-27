@@ -76,6 +76,24 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
+    # Initialize session state defaults if not set
+    if 'filter1' not in st.session_state:
+        st.session_state['filter1'] = ""
+    if 'filter6' not in st.session_state:
+        st.session_state['filter6'] = ""
+    if 'optional_filter' not in st.session_state:
+        st.session_state['optional_filter'] = ""
+    if 'filter2' not in st.session_state:
+        st.session_state['filter2'] = ""
+    if 'filter3' not in st.session_state:
+        st.session_state['filter3'] = ""
+    if 'filter4' not in st.session_state:
+        st.session_state['filter4'] = ""
+    if 'filter5' not in st.session_state:
+        st.session_state['filter5'] = ""
+    if 'filter7' not in st.session_state:
+        st.session_state['filter7'] = ""
+
     state_list, route_dict = get_state_and_routes()
 
     col1, col2 = st.columns(2)
@@ -171,9 +189,8 @@ def allfilterfunc():
             busfare=bus_fare
         )
 
-        if not filtered_df.empty:
+        if not filtered_df.empty
             st.write("Filtered Data")
             st.dataframe(filtered_df)
         else:
             st.write("No matching data found. Please adjust your filters and try again.")
-
