@@ -132,10 +132,15 @@ def allfilterfunc():
 
     # Update bus routes based on the selected state
     with col2:
-        if st.session_state.get('filter1'):
+        if st.session_state['filter1']:
             bus_route_options = route_dict.get(st.session_state['filter1'], [])
         else:
             bus_route_options = []
+
+        # Retain the previous selection if it still exists in the new options
+        if st.session_state['filter6'] not in bus_route_options:
+            st.session_state['filter6'] = ""
+
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
