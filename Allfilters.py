@@ -3,31 +3,30 @@ import streamlit as st
 import mysql.connector
 from DataClean_DB_Insert import create_connection
 
-def get_state_and_routes():
-    state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
-
+# Function to get bus routes based on the selected state
+def get_routes(state):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT DISTINCT states, route_name FROM bus_routes WHERE states IN (%s)" % ','.join(['%s'] * len(state_list))
-    cursor.execute(query, tuple(state_list))
+    query = "SELECT DISTINCT route_name FROM bus_routes WHERE states = %s"
+    cursor.execute(query, (state,))
     state_route = cursor.fetchall()
     cursor.close()
     mydb.close()
 
-    route_dict = {}
-    for state, route in state_route:
-        if state not in route_dict:
-            route_dict[state] = []
-        route_dict[state].append(route)
+    route_dict = {state: [route[0] for route in state_route]}  # Extracting route names
+    return route_dict
 
-    return state_list, route_dict
-
+# Function to filter data based on the selected filters
 def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, seats=None, busfare=None):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT * FROM bus_routes WHERE states = %s and route_name = %s"
+
+    query = "SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
+    if route:
+        query += " AND route_name = %s"
+        params.append(route)
     if operator:
         query += " AND operator = %s"
         params.append(operator)
@@ -40,9 +39,6 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
         query += " AND star_rating " + ratings
     if seats:
         query += " AND seats_available " + seats
-    if route:
-        query += " AND route_name = %s"
-        params.append(route)
     if busfare:
         query += " AND " + busfare
 
@@ -57,6 +53,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
     df = pd.DataFrame(results, columns=columns)
 
+    # Convert time columns to a more readable format
     for time_column in ['departing_time', 'reaching_time']:
         if time_column in df.columns:
             df[time_column] = df[time_column].apply(
@@ -65,45 +62,41 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
     return df
 
+# Main filter function
 def allfilterfunc():
     # Initialize session state defaults if not set
-    if 'filter1' not in st.session_state:
-        st.session_state['filter1'] = ""
-    if 'filter6' not in st.session_state:
-        st.session_state['filter6'] = ""
-    if 'optional_filter' not in st.session_state:
-        st.session_state['optional_filter'] = ""
-    if 'filter2' not in st.session_state:
-        st.session_state['filter2'] = ""
-    if 'filter3' not in st.session_state:
-        st.session_state['filter3'] = ""
-    if 'filter4' not in st.session_state:
-        st.session_state['filter4'] = ""
-    if 'filter5' not in st.session_state:
-        st.session_state['filter5'] = ""
-    if 'filter7' not in st.session_state:
-        st.session_state['filter7'] = ""
+    st.session_state.setdefault('filter1', "")
+    st.session_state.setdefault('filter6', "")
+    st.session_state.setdefault('optional_filter', "")
+    st.session_state.setdefault('filter2', "")
+    st.session_state.setdefault('filter3', "")
+    st.session_state.setdefault('filter4', "")
+    st.session_state.setdefault('filter5', "")
+    st.session_state.setdefault('filter7', "")
 
-    state_list, route_dict = get_state_and_routes()
-
-    # Mandatory filter starts here
+    # List of available states (This can be replaced with a dynamic fetch if needed)
+    state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
+    
+    # User interface for filtering options
     col1, col2 = st.columns(2)
     with col1:
-        selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')
+        selected_state = st.selectbox("State Name", options=state_list, key='filter1')
 
     # Update bus routes based on the selected state
+    if selected_state:
+        route_dict = get_routes(selected_state)
+        bus_route_options = route_dict.get(selected_state, [])
+    else:
+        bus_route_options = []
+
     with col2:
-        if selected_state:
-            bus_route_options = route_dict.get(selected_state, [])
-        else:
-            bus_route_options = []
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
 
     st.write("Additional Filters")
 
     col7, col8 = st.columns(2)
     with col7:
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["","Private","Government"], key='optional_filter')
+        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Private", "Government"], key='optional_filter')
     with col8:
         filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
 
@@ -126,7 +119,7 @@ def allfilterfunc():
         if st.session_state['filter7'] == "< 500":
             bus_fare = "price < 500"
         elif st.session_state['filter7'] == "500 - 1000":
-            bus_fare = "price BETWEEN '500' AND '1000'"
+            bus_fare = "price BETWEEN 500 AND 1000"
         elif st.session_state['filter7'] == "> 1000":
             bus_fare = "price > 1000"
 
@@ -168,7 +161,7 @@ def allfilterfunc():
         elif st.session_state['filter5'] == "More than 4":
             seats_cond = "> 4"
 
-        # Apply the filters
+        # Fetch and display the filtered data
         filtered_df = get_filtered_data(
             statename=st.session_state['filter1'],
             route=st.session_state['filter6'],
@@ -185,4 +178,3 @@ def allfilterfunc():
             st.dataframe(filtered_df)
         else:
             st.write("No matching data found. Please adjust your filters and try again.")
-
