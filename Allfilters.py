@@ -189,7 +189,7 @@ def allfilterfunc():
             busfare=bus_fare
         )
 
-        if not filtered_df.empty
+        if not filtered_df.empty:
             st.write("Filtered Data")
             st.dataframe(filtered_df)
         else:
