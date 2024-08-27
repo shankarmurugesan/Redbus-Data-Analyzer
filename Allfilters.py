@@ -88,7 +88,7 @@ def allfilterfunc():
 
     # Update bus routes based on the selected state
     if selected_state:
-        route_dict = get_routes(filter1)
+        route_dict = get_routes(selected_state)
         bus_route_options = route_dict.get(selected_state, [])
     else:
         bus_route_options = []
