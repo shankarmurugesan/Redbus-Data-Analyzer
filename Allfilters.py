@@ -21,9 +21,11 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     mydb = create_connection()
     cursor = mydb.cursor()
 
+    # Base query
     query = "SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
+    # Conditionally add additional filters
     if route:
         query += " AND route_name = %s"
         params.append(route)
@@ -42,6 +44,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     if busfare:
         query += " AND " + busfare
 
+    # Ensure parameters match placeholders
     cursor.execute(query, tuple(params))
     columns = [desc[0] for desc in cursor.description]
     results = cursor.fetchall()
@@ -61,6 +64,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
             df[time_column] = df[time_column].apply(lambda x: f"{x[0]:02}:{x[1]:02}:00")
 
     return df
+
 
 # Main filter function
 def allfilterfunc():
