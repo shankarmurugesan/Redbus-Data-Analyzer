@@ -129,14 +129,16 @@ def allfilterfunc():
     with col1:
         state_list, route_dict = get_state_and_routes()
         selected_state = st.selectbox("State Name", options=[""] + state_list, key='filter1')  # Use key for session state
+        st.session_state.filter1 = selected_state
 
     # Update bus routes based on the selected state
     with col2:
-        if selected_state:
-            bus_route_options = route_dict.get(selected_state, [])
+        if st.session_state.filter1:
+            bus_route_options = route_dict.get(st.session_state.filter1, [])
         else:
             bus_route_options = []
         selected_route = st.selectbox("Bus Route", options=[""] + bus_route_options, key='filter6')
+        st.session_state.filter6 = selected_route
 
     st.write("Additional Filters")
 
@@ -144,70 +146,79 @@ def allfilterfunc():
     with col7:
         operator_list = get_operator()
         optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=[""] + operator_list, key='optional_filter')
+        st.session_state.optional_filter = optional_filter
     with col8:
         filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
+        st.session_state.filter7 = filter7
 
     col3, col4 = st.columns(2)
     with col3:
         filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"], key='filter2')
+        st.session_state.filter2 = filter2
     with col4:
         filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"], key='filter3')
+        st.session_state.filter3 = filter3
+
     col5, col6 = st.columns(2)
     with col5:
         filter4 = st.selectbox("Travellers Ratings", options=["", "4 * & Above", "3 * To 4 *", "Below 3 *"], key='filter4')
+        st.session_state.filter4 = filter4
     with col6:
         filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
+        st.session_state.filter5 = filter5
 
     # Mapping filter7 to corresponding SQL conditions
     bus_fare = None
-    if filter7 == "< 500":
+    if st.session_state.filter7 == "< 500":
         bus_fare = "price < 500"
-    elif filter7 == "500 - 1000":
+    elif st.session_state.filter7 == "500 - 1000":
         bus_fare = "price BETWEEN '500' AND '1000'"
-    elif filter7 == "> 1000":
+    elif st.session_state.filter7 == "> 1000":
         bus_fare = "price > 1000"
 
     # Mapping filter2 to corresponding SQL conditions
     DepartureCond = None
-    if filter2 == "06:00 - 12:00 Morning":
+    if st.session_state.filter2 == "06:00 - 12:00 Morning":
         DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-    elif filter2 == "12:00 - 18:00 Afternoon":
+    elif st.session_state.filter2 == "12:00 - 18:00 Afternoon":
         DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-    elif filter2 == "18:00 - 24:00 Evening":
+    elif st.session_state.filter2 == "18:00 - 24:00 Evening":
         DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-    elif filter2 == "00:00 - 06:00 Night":
+    elif st.session_state.filter2 == "00:00 - 06:00 Night":
         DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
     # Mapping filter3 to corresponding SQL conditions
     BusTypeCond = None
-    if filter3 == "Seater":
+    if st.session_state.filter3 == "Seater":
         BusTypeCond = "%Seater%"
-    elif filter3 == "Sleeper":
+    elif st.session_state.filter3 == "Sleeper":
         BusTypeCond = "%Sleeper%"
-    elif filter3 == "AC":
+    elif st.session_state.filter3 == "AC":
         BusTypeCond = "%A/C%"
-    elif filter3 == "NonAC":
+    elif st.session_state.filter3 == "NonAC":
         BusTypeCond = "%Non AC%"
 
     # Mapping filter4 to corresponding SQL conditions
     ratings_cond = None
-    if filter4 == "4 * & Above":
+    if st.session_state.filter4 == "4 * & Above":
         ratings_cond = ">= 4"
-    elif filter4 == "3 * To 4 *":
+    elif st.session_state.filter4 == "3 * To 4 *":
         ratings_cond = "BETWEEN 3 AND 4"
-    elif filter4 == "Below 3 *":
+    elif st.session_state.filter4 == "Below 3 *":
         ratings_cond = "< 3"
 
     # Mapping filter5 to corresponding SQL conditions
     seats_cond = None
-    if filter5 == "Less than 4":
+    if st.session_state.filter5 == "Less than 4":
         seats_cond = "< 4"
-    elif filter5 == "More than 4":
+    elif st.session_state.filter5 == "More than 4":
         seats_cond = ">= 4"
 
-    submit = st.button("Submit", key='submit')
-    if submit:
-        df = get_filtered_data(statename=selected_state, route=selected_route, operator=optional_filter,
+    # Trigger search button
+    search_button = st.button("Search")
+    if search_button:
+        df = get_filtered_data(statename=st.session_state.filter1, route=st.session_state.filter6,
+                               operator=st.session_state.optional_filter,
                                departure_time=DepartureCond, bus_type=BusTypeCond, ratings=ratings_cond,
                                seats=seats_cond, busfare=bus_fare)
         if df.empty:
