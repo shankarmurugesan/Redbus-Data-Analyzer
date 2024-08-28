@@ -17,3 +17,6 @@ Filter page:
 
 ![image](https://github.com/user-attachments/assets/3d91891a-eb5c-41e7-b662-7b9bdd7fb3f6)
 
+Dash Board page:
+
+![image](https://github.com/user-attachments/assets/e63f1bcd-3f6f-47c3-96b7-b65ed828b81a)
