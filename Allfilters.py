@@ -140,7 +140,7 @@ def allfilterfunc():
         )
 
     # Fetch all data required for other filters if a state is selected
-    bus_route = get_route(st.session_state['selected_state']) if st.session_state['selected_state'] else []
+    bus_route = get_route(selected_state)
     min_fare, max_fare = get_min_max_fare(selected_state)  # Fetch min and max fare for the selected state
     min_seats, max_seats = get_min_max_seats(selected_state)  # Fetch min and max seats for the selected state
 
@@ -158,7 +158,7 @@ def allfilterfunc():
             "Bus Fare Range",
             min_value=min_fare or 0.0,
             max_value=max_fare or 10000.0,
-            value=st.session_state['selected_bus_fare'],
+            value=min_fare or 0.0,
             step=50.00,
             key="selected_bus_fare"
         )
