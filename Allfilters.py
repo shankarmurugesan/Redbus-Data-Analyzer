@@ -134,11 +134,17 @@ def allfilterfunc():
     with col1:
         state_options = [""] + states
         state_index = state_options.index(st.session_state.selected_state) if st.session_state.selected_state in states else 0
-        st.session_state.selected_state = st.selectbox(
+        selected_state = st.selectbox(
             "State Name",
             options=state_options,
             index=state_index
         )
+        st.session_state.selected_state = selected_state  # Ensure the session state is updated
+
+    # Fetch data based on updated state selection
+    bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
+    min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
+    min_seats, max_seats = get_min_max_seats(st.session_state.selected_state)
 
     # Other filters are independent of the selected state
     with col2:
@@ -150,11 +156,6 @@ def allfilterfunc():
             index=operator_index
         )
     
-    # Fetch data based on state selection for dependent filters
-    bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
-    min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
-    min_seats, max_seats = get_min_max_seats(st.session_state.selected_state)
-
     # Show additional filters regardless of state selection
     col3, col4 = st.columns(2)
     with col3:
