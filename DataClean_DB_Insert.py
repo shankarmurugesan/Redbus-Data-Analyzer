@@ -10,10 +10,11 @@ def create_connection():
     for attempt in range(retry_attempts):
         try:
             connection = mysql.connector.connect(
-                host='host',
-                database='database',
-                user='user',
-                password='password'
+                host='gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+                port='4000',
+                database='redbus',
+                user='3dThprF9Dbe3P8c.root',
+                password='IDtIXLlb6Io3Lh87'   
             )
             if connection.is_connected():
                 print('Connection successful')
