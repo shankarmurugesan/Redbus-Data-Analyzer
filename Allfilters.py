@@ -221,6 +221,8 @@ def allfilterfunc():
         elif st.session_state['selected_bus_type'] == "NonAC":
             BusTypeCond = "%Non AC%"
 
+    if st.button("Search"):
+        st.subheader("Filtered Results")
         filtered_df = get_filtered_data(
             statename=st.session_state['selected_state'],
             route=st.session_state['selected_route'],
