@@ -150,8 +150,8 @@ def allfilterfunc():
             index=operator_index
         )
   # Update session state after widgets are created
-    st.session_state['selected_state'] = selected_state
-    st.session_state['selected_operator'] = selected_operator
+    st.session_state['selected_state'] = state_options
+    st.session_state['selected_operator'] = state_options
     
     # Fetch data based on state selection for dependent filters
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
