@@ -230,8 +230,8 @@ def allfilterfunc():
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
             ratings=st.session_state['selected_ratings'],
-            min_seats=seats_avail,
-            max_seats=seats_avail + 1,
+            min_seats=selected_seats_avail,
+            max_seats=selected_seats_avail + 1,
             min_fare=bus_fare
         )
 
