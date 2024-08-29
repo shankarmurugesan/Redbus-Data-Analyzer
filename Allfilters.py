@@ -59,9 +59,12 @@ def get_min_max_seats(state):
 def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, min_seats=None, max_seats=None, min_fare=None, max_fare=None):
     mydb = create_connection()
     cursor = mydb.cursor()
+
+    # Start constructing the query
     query = "SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
+    # Apply filters
     if operator:
         query += " AND operator = %s"
         params.append(operator)
@@ -199,37 +202,37 @@ def allfilterfunc():
             key="selected_seats_avail"
         )
 
-# Set DepartureCond based on selected_departure_time
-        DepartureCond = None
-        if st.session_state['selected_departure_time'] == "06:00 - 12:00 Morning":
-            DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-        elif st.session_state['selected_departure_time'] == "12:00 - 18:00 Afternoon":
-            DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-        elif st.session_state['selected_departure_time'] == "18:00 - 24:00 Evening":
-            DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-        elif st.session_state['selected_departure_time'] == "00:00 - 06:00 Night":
-            DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
+    # Set DepartureCond based on selected_departure_time
+    DepartureCond = None
+    if selected_departure_time == "06:00 - 12:00 Morning":
+        DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
+    elif selected_departure_time == "12:00 - 18:00 Afternoon":
+        DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
+    elif selected_departure_time == "18:00 - 24:00 Evening":
+        DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
+    elif selected_departure_time == "00:00 - 06:00 Night":
+        DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
-        # Set BusTypeCond based on selected_bus_type
-        BusTypeCond = None
-        if st.session_state['selected_bus_type'] == "Seater":
-            BusTypeCond = "%Seater%"
-        elif st.session_state['selected_bus_type'] == "Sleeper":
-            BusTypeCond = "%Sleeper%"
-        elif st.session_state['selected_bus_type'] == "AC":
-            BusTypeCond = "%A/C%"
-        elif st.session_state['selected_bus_type'] == "NonAC":
-            BusTypeCond = "%Non AC%"
+    # Set BusTypeCond based on selected_bus_type
+    BusTypeCond = None
+    if selected_bus_type == "Seater":
+        BusTypeCond = "%Seater%"
+    elif selected_bus_type == "Sleeper":
+        BusTypeCond = "%Sleeper%"
+    elif selected_bus_type == "AC":
+        BusTypeCond = "%A/C%"
+    elif selected_bus_type == "NonAC":
+        BusTypeCond = "%Non AC%"
 
     if st.button("Search"):
         st.subheader("Filtered Results")
         filtered_df = get_filtered_data(
-            statename=st.session_state['selected_state'],
-            route=st.session_state['selected_route'],
-            operator=st.session_state['selected_operator'],
+            statename=selected_state,
+            route=selected_route,
+            operator=selected_operator,
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
-            ratings=st.session_state['selected_ratings'],
+            ratings=selected_ratings,
             min_seats=selected_seats_avail,
             max_seats=selected_seats_avail + 1,
             min_fare=selected_bus_fare
