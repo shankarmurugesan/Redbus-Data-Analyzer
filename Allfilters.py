@@ -133,17 +133,30 @@ def allfilterfunc():
     col1, col2 = st.columns(2)
     with col1:
         state_options = [""] + states
-        # Use `key` parameter to bind directly to session state
-        selected_state = st.selectbox(
+        # Directly tie the selectbox to session state using the key
+        st.selectbox(
             "State Name",
             options=state_options,
-            index=state_options.index(st.session_state['selected_state']) if st.session_state['selected_state'] in state_options else 0,
+            index=state_options.index(st.session_state.selected_state) if st.session_state.selected_state in state_options else 0,
             key='selected_state'
         )
 
-    # Update the session state based on the user's selection
-    st.session_state['selected_state'] = selected_state
+    # Fetch data based on updated state selection
+    bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
+    min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
+    min_seats, max_seats = get_min_max_seats(st.session_state.selected_state)
 
+    # Other filters are independent of the selected state
+    with col2:
+        operator_options = ["", "Government", "Private"]
+        operator_index = operator_options.index(st.session_state.selected_operator) if st.session_state.selected_operator in operator_options else 0
+        st.selectbox(
+            "Bus Operator Pvt/Govt",
+            options=operator_options,
+            index=operator_index,
+            key='selected_operator'
+        )
+        
     # Fetch data based on updated state selection
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
     min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
