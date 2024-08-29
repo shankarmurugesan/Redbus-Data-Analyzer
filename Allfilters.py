@@ -108,7 +108,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
-    # Initialize session state variables
+    # Initialize session state variables if not already present
     if 'selected_state' not in st.session_state:
         st.session_state['selected_state'] = ""
     if 'selected_operator' not in st.session_state:
@@ -132,19 +132,22 @@ def allfilterfunc():
     # Select State Filter
     col1, col2 = st.columns(2)
     with col1:
-        # Make sure the selected state is correctly handled
+        state_options = [""] + states
+        state_index = state_options.index(st.session_state.selected_state) if st.session_state.selected_state in states else 0
         st.session_state.selected_state = st.selectbox(
             "State Name",
-            options=[""] + states,
-            index=states.index(st.session_state.selected_state) + 1 if st.session_state.selected_state in states else 0
+            options=state_options,
+            index=state_index
         )
 
     # Other filters are independent of the selected state
     with col2:
+        operator_options = ["", "Government", "Private"]
+        operator_index = operator_options.index(st.session_state.selected_operator) if st.session_state.selected_operator in operator_options else 0
         st.session_state.selected_operator = st.selectbox(
             "Bus Operator Pvt/Govt",
-            options=["", "Government", "Private"],
-            index=["", "Government", "Private"].index(st.session_state.selected_operator)
+            options=operator_options,
+            index=operator_index
         )
 
     # Fetch data based on state selection for dependent filters
@@ -155,10 +158,12 @@ def allfilterfunc():
     # Show additional filters regardless of state selection
     col3, col4 = st.columns(2)
     with col3:
+        route_options = [""] + bus_route
+        route_index = route_options.index(st.session_state.selected_route) if st.session_state.selected_route in bus_route else 0
         st.session_state.selected_route = st.selectbox(
             "Bus Route",
-            options=[""] + bus_route,
-            index=bus_route.index(st.session_state.selected_route) + 1 if st.session_state.selected_route in bus_route else 0
+            options=route_options,
+            index=route_index
         )
     with col4:
         st.session_state.selected_bus_fare = st.number_input(
@@ -171,16 +176,20 @@ def allfilterfunc():
 
     col5, col6 = st.columns(2)
     with col5:
+        departure_time_options = ["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"]
+        departure_time_index = departure_time_options.index(st.session_state.selected_departure_time) if st.session_state.selected_departure_time in departure_time_options else 0
         st.session_state.selected_departure_time = st.selectbox(
             "Departure Time",
-            options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"],
-            index=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"].index(st.session_state.selected_departure_time)
+            options=departure_time_options,
+            index=departure_time_index
         )
     with col6:
+        bus_type_options = ["", "Seater", "Sleeper", "AC", "NonAC"]
+        bus_type_index = bus_type_options.index(st.session_state.selected_bus_type) if st.session_state.selected_bus_type in bus_type_options else 0
         st.session_state.selected_bus_type = st.selectbox(
             "Bus Type:",
-            options=["", "Seater", "Sleeper", "AC", "NonAC"],
-            index=["", "Seater", "Sleeper", "AC", "NonAC"].index(st.session_state.selected_bus_type)
+            options=bus_type_options,
+            index=bus_type_index
         )
 
     col7, col8 = st.columns(2)
