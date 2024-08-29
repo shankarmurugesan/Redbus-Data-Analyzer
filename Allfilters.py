@@ -141,7 +141,9 @@ def allfilterfunc():
         )
         # Update session state
         st.session_state['selected_operator'] = selected_operator
-
+        
+    filter1 = st.session_state['selected_state']
+    optional_filter = st.session_state['selected_operator']
     # Fetch all data required for other filters if a state is selected
     bus_route = get_route(filter1) if filter1 else []
     min_fare, max_fare = get_min_max_fare(filter1) if filter1 else (0.0, 10000.0)
