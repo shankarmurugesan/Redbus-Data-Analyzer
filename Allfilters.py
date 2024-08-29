@@ -161,7 +161,7 @@ def allfilterfunc():
             "Bus Fare Range",
             min_value=min_fare or 0.0,
             max_value=max_fare or 10000.0,
-            value=min_fare or 0.0,
+            value=st.session_state['selected_bus_fare'] or 0.0,
             step=50.00,
             key="selected_bus_fare"
         )
