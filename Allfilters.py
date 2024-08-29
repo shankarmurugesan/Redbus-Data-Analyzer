@@ -141,8 +141,8 @@ def allfilterfunc():
 
     # Fetch all data required for other filters if a state is selected
     bus_route = get_route(st.session_state['selected_state']) if st.session_state['selected_state'] else []
-    min_fare, max_fare = get_min_max_fare(st.session_state['selected_state']) if st.session_state['selected_state'] else (0.0, 10000.0)
-    min_seats, max_seats = get_min_max_seats(st.session_state['selected_state']) if st.session_state['selected_state'] else (0, 50)
+    min_fare, max_fare = get_min_max_fare(selected_state)  # Fetch min and max fare for the selected state
+    min_seats, max_seats = get_min_max_seats(selected_state)  # Fetch min and max seats for the selected state
 
     col3, col4 = st.columns(2)
     with col3:
