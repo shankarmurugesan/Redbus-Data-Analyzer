@@ -199,29 +199,28 @@ def allfilterfunc():
             key="selected_seats_avail"
         )
 
+# Set DepartureCond based on selected_departure_time
         DepartureCond = None
-        if filter2 == "06:00 - 12:00 Morning":
+        if st.session_state['selected_departure_time'] == "06:00 - 12:00 Morning":
             DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-        elif filter2 == "12:00 - 18:00 Afternoon":
+        elif st.session_state['selected_departure_time'] == "12:00 - 18:00 Afternoon":
             DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-        elif filter2 == "18:00 - 24:00 Evening":
+        elif st.session_state['selected_departure_time'] == "18:00 - 24:00 Evening":
             DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-        elif filter2 == "00:00 - 06:00 Night":
+        elif st.session_state['selected_departure_time'] == "00:00 - 06:00 Night":
             DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
+        # Set BusTypeCond based on selected_bus_type
         BusTypeCond = None
-        if filter3 == "Seater":
+        if st.session_state['selected_bus_type'] == "Seater":
             BusTypeCond = "%Seater%"
-        elif filter3 == "Sleeper":
+        elif st.session_state['selected_bus_type'] == "Sleeper":
             BusTypeCond = "%Sleeper%"
-        elif filter3 == "AC":
+        elif st.session_state['selected_bus_type'] == "AC":
             BusTypeCond = "%A/C%"
-        elif filter3 == "NonAC":
+        elif st.session_state['selected_bus_type'] == "NonAC":
             BusTypeCond = "%Non AC%"
-            
-    # Search button logic
-    if st.button("Search"):
-        st.subheader("Filtered Results")
+
         filtered_df = get_filtered_data(
             statename=st.session_state['selected_state'],
             route=st.session_state['selected_route'],
@@ -238,4 +237,3 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
-
