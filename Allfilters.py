@@ -133,15 +133,13 @@ def allfilterfunc():
     col1, col2 = st.columns(2)
     with col1:
         state_options = [""] + states
-        state_index = state_options.index(st.session_state.selected_state) if st.session_state.selected_state in state_options else 0
-        
-        # Ensure `st.session_state.selected_state` is updated
-        selected_state = st.selectbox(
+        # Use `key` parameter to bind directly to session state
+        st.selectbox(
             "State Name",
             options=state_options,
-            index=state_index
+            index=state_options.index(st.session_state.selected_state) if st.session_state.selected_state in state_options else 0,
+            key='selected_state'
         )
-        st.session_state.selected_state = selected_state
 
     # Fetch data based on updated state selection
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
