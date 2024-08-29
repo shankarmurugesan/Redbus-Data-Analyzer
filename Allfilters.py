@@ -105,9 +105,17 @@ def allfilterfunc():
     col1, col2 = st.columns(2)
     with col1:
         state = get_state()
-        filter1 = st.selectbox("State Name", options=[""] + state)
+        filter1 = st.selectbox(
+            "State Name", 
+            options=[""] + state, 
+            key="state_name"  # Use session state key
+        )
     with col2:
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
+        optional_filter = st.selectbox(
+            "Bus Operator Pvt/Govt", 
+            options=["", "Government", "Private"], 
+            key="bus_operator"  # Use session state key
+        )
 
     if filter1:
         st.write("Additional Filters")
@@ -117,7 +125,11 @@ def allfilterfunc():
 
         col7, col8 = st.columns(2)
         with col7:
-            filter6 = st.selectbox("Bus Route", options=[""] + bus_route)
+            filter6 = st.selectbox(
+                "Bus Route", 
+                options=[""] + bus_route, 
+                key="bus_route"  # Use session state key
+            )
         with col8:
             # Combine Min and Max Bus Fare in one column
             bus_fare = st.number_input(
@@ -125,18 +137,32 @@ def allfilterfunc():
                 min_value=min_fare or 0.0,
                 max_value=max_fare or 10000.0,
                 value=min_fare or 0.0,
-                step=50.00
+                step=50.00,
+                key="bus_fare"  # Use session state key
             )
 
         col3, col4 = st.columns(2)
         with col3:
-            filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"])
+            filter2 = st.selectbox(
+                "Departure Time", 
+                options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"], 
+                key="departure_time"  # Use session state key
+            )
         with col4:
-            filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"])
+            filter3 = st.selectbox(
+                "Bus Type:", 
+                options=["", "Seater", "Sleeper", "AC", "NonAC"], 
+                key="bus_type"  # Use session state key
+            )
 
         col5, col6 = st.columns(2)
         with col5:
-            filter4 = st.slider("Traveler Ratings", 0.0, 5.0, (0.0, 5.0), step=0.1)
+            filter4 = st.slider(
+                "Traveler Ratings", 
+                0.0, 5.0, (0.0, 5.0), 
+                step=0.1,
+                key="traveler_ratings"  # Use session state key
+            )
         with col6:
             # Combine Min and Max Seats in one column
             seats_avail = st.number_input(
@@ -144,7 +170,8 @@ def allfilterfunc():
                 min_value=min_seats or 0,
                 max_value=max_seats or 50,
                 value=min_seats or 0,
-                step=1
+                step=1,
+                key="seats_avail"  # Use session state key
             )
 
         DepartureCond = None
