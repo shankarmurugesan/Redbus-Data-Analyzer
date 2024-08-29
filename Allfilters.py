@@ -155,7 +155,7 @@ def allfilterfunc():
             options=operator_options,
             index=operator_index
         )
-    
+
     # Show additional filters regardless of state selection
     col3, col4 = st.columns(2)
     with col3:
@@ -247,5 +247,3 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
-
-
