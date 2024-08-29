@@ -102,6 +102,11 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
+    # Initialize session state for dropdowns if they don't exist
+    if 'selected_state' not in st.session_state:
+        st.session_state['selected_state'] = ""
+    if 'selected_operator' not in st.session_state:
+        st.session_state['selected_operator'] = ""
     col1, col2 = st.columns(2)
     with col1:
         state = get_state()
