@@ -3,6 +3,7 @@ import streamlit as st
 import mysql.connector
 from DataClean_DB_Insert import create_connection
 
+# Function definitions remain unchanged
 def get_state():
     mydb = create_connection()
     cursor = mydb.cursor()
@@ -36,7 +37,6 @@ def get_min_max_fare(state):
     cursor.close()
     mydb.close()
 
-    # Convert to float if not None
     if min_fare is not None:
         min_fare = float(min_fare)
     if max_fare is not None:
@@ -112,19 +112,21 @@ def allfilterfunc():
     col1, col2 = st.columns(2)
     with col1:
         state = get_state()
-        # Use session state for 'State Name' dropdown
-        st.session_state['selected_state'] = st.selectbox(
+        selected_state = st.selectbox(
             "State Name", 
             options=[""] + state, 
             index=[""] + state.index(st.session_state['selected_state']) if st.session_state['selected_state'] in state else 0
         )
+        # Update session state
+        st.session_state['selected_state'] = selected_state
     with col2:
-        # Use session state for 'Bus Operator Pvt/Govt' dropdown
-        st.session_state['selected_operator'] = st.selectbox(
+        selected_operator = st.selectbox(
             "Bus Operator Pvt/Govt", 
             options=["", "Government", "Private"], 
             index=["", "Government", "Private"].index(st.session_state['selected_operator'])
         )
+        # Update session state
+        st.session_state['selected_operator'] = selected_operator
 
     filter1 = st.session_state['selected_state']
     optional_filter = st.session_state['selected_operator']
@@ -132,14 +134,13 @@ def allfilterfunc():
     if filter1:
         st.write("Additional Filters")
         bus_route = get_route(filter1)
-        min_fare, max_fare = get_min_max_fare(filter1)  # Fetch min and max fare for the selected state
-        min_seats, max_seats = get_min_max_seats(filter1)  # Fetch min and max seats for the selected state
+        min_fare, max_fare = get_min_max_fare(filter1)
+        min_seats, max_seats = get_min_max_seats(filter1)
 
         col7, col8 = st.columns(2)
         with col7:
             filter6 = st.selectbox("Bus Route", options=[""] + bus_route)
         with col8:
-            # Combine Min and Max Bus Fare in one column
             bus_fare = st.number_input(
                 "Bus Fare Range",
                 min_value=min_fare or 0.0,
@@ -158,7 +159,6 @@ def allfilterfunc():
         with col5:
             filter4 = st.slider("Traveler Ratings", 0.0, 5.0, (0.0, 5.0), step=0.1)
         with col6:
-            # Combine Min and Max Seats in one column
             seats_avail = st.number_input(
                 "Seats Availability",
                 min_value=min_seats or 0,
