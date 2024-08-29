@@ -6,19 +6,23 @@ import os
 
 # Establish a connection to the MySQL database
 def create_connection():
-    try:
-        mydb = mysql.connector.connect(
-            host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
-            port="4000",
-            user="3dThprF9Dbe3P8c.root",
-            password="IDtIXLlb6Io3Lh87",  
-            database="redbus",
-        )
-        if mydb.is_connected():
-            return mydb
-    except Error as e:
-        st.error(f"Error connecting to MySQL: {e}")
-        return None
+    retry_attempts = 5
+    for attempt in range(retry_attempts):
+        try:
+            connection = mysql.connector.connect(
+                host='host',
+                database='database',
+                user='user',
+                password='password'
+            )
+            if connection.is_connected():
+                print('Connection successful')
+                return connection
+        except Error as e:
+            print(f'Error: {e}')
+            time.sleep(5)  # Wait before retrying
+    raise Exception('Failed to connect to the database after several attempts')
+    
 def datacleandbinsert(statename):
     # Set the correct path to the directory
     directory = f'D:/Project/'  # Update the path here
