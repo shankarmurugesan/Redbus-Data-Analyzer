@@ -201,19 +201,27 @@ def allfilterfunc():
 
     # Prepare condition for query
     DepartureCond = None
-    if st.session_state.selected_departure_time == "06:00 - 12:00 Morning":
+    if selected_departure_time == "06:00 - 12:00 Morning":
         DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-    elif st.session_state.selected_departure_time == "12:00 - 18:00 Afternoon":
+    elif selected_departure_time == "12:00 - 18:00 Afternoon":
         DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-    elif st.session_state.selected_departure_time == "18:00 - 24:00 Evening":
+    elif selected_departure_time == "18:00 - 24:00 Evening":
         DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-    elif st.session_state.selected_departure_time == "00:00 - 06:00 Night":
+    elif selected_departure_time == "00:00 - 06:00 Night":
         DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
     BusTypeCond = None
-    if st.session_state.selected_bus_type:
-        BusTypeCond = "%" + st.session_state.selected_bus_type + "%"
-
+    if selected_bus_type == "Seater":
+        BusTypeCond = "%Seater%"
+    elif selected_bus_type == "Sleeper":
+        BusTypeCond = "%Sleeper%"
+    elif selected_bus_type == "AC":
+        BusTypeCond = "%A/C%"
+    elif selected_bus_type == "NonAC":
+        BusTypeCond = "%Non AC%"
+        
+if st.button("Search"):
+    st.subheader("Filtered Results")
     df = get_filtered_data(
         statename=st.session_state.selected_state,
         route=st.session_state.selected_route,
@@ -225,7 +233,8 @@ def allfilterfunc():
         min_fare=st.session_state.selected_bus_fare
     )
 
-    st.write("Total Filtered Buses: ", len(df))
-    if not df.empty:
-        st.dataframe(df)
+if filtered_df.empty:
+    st.write("No results found for the selected filters.")
+else:
+    st.dataframe(filtered_df)
 
