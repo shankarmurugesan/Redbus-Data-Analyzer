@@ -3,8 +3,6 @@ import time
 import pandas as pd
 from datetime import datetime, timedelta
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
@@ -12,16 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from DataClean_DB_Insert import datacleandbinsert
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.firefox.options import Options
-from webdriver_manager.firefox import GeckoDriverManager
 
 def scrabdata(unique_key):
-    os.environ['GH_TOKEN'] = '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'
-    firefox_options = Options()
-    firefox_options.add_argument("--headless")
-    firefox_options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"  # Specify the path to Firefox binary
     # Determine state-specific details
     state_map = {
         "Chandigarh_CTU": ("chandigarh-transport-undertaking-ctu", "Chandigarh"),
@@ -36,9 +26,9 @@ def scrabdata(unique_key):
     }
 
     stateroute, statename = state_map.get(unique_key, ("pepsu", "Punjab"))
-    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=firefox_options)
-    #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    driver.get(f'https://www.redbus.in/online-booking/{stateroute}/')
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver.get(f'https://www.redbus.in/online-booking/{stateroute}/?utm_source=rtchometile')
     driver.maximize_window()
     wait = WebDriverWait(driver, 10)  # Increase wait time for stability
 
@@ -166,18 +156,18 @@ def scrabdata(unique_key):
     # Define the file path with the current date and time
     file_path = os.path.join(folder_name, f"{statename}_{current_date}_{current_time}.xlsx")
 
-    # Check for existing files created within the last 10 seconds
+    # Check for existing files created within the last 30 minutes
     file_created_within_10s = False
     for file in os.listdir(folder_name):
         if file.startswith(f"{statename}_{current_date}"):
             file_path_check = os.path.join(folder_name, file)
             file_mod_time = datetime.fromtimestamp(os.path.getmtime(file_path_check))
-            if now - file_mod_time <= timedelta(seconds=10):
+            if now - file_mod_time <= timedelta(minutes=30):
                 file_created_within_10s = True
                 break
 
     if file_created_within_10s:
-        print("File already present from the last 10 seconds. Please try again later.")
+        print("File already present from the last 30 minutes. Please try again later.")
     else:
         # Save the DataFrame to an Excel file
         df.to_excel(file_path, index=False)

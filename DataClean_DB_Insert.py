@@ -8,10 +8,9 @@ import os
 def create_connection():
     try:
         mydb = mysql.connector.connect(
-            host="gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
-            port=4000,
-            user="3dThprF9Dbe3P8c.root",
-            password="IDtIXLlb6Io3Lh87",  # use your own password
+            host="localhost",
+            user="root",
+            password="",  # use your own password
             database="redbus",
         )
         if mydb.is_connected():
@@ -21,7 +20,7 @@ def create_connection():
         return None
 def datacleandbinsert(statename):
     # Set the correct path to the directory
-    directory = f'Project/'  # Update the path here
+    directory = f'D:/Project/'  # Update the path here
 
     # Check if the directory exists
     if not os.path.exists(directory):
@@ -72,7 +71,7 @@ def datacleandbinsert(statename):
 
         # Define the delete query to remove existing data for the state
         delete_query = """
-            DELETE FROM bus_routes WHERE states = %s
+            DELETE FROM bus_routes WHERE state = %s
         """
         # Execute the delete query
         cursor.execute(delete_query, (state_to_clean,))
@@ -82,7 +81,7 @@ def datacleandbinsert(statename):
         insert_query = """
             INSERT INTO bus_routes (
                 busname, bustype, departing_time, duration, reaching_time, star_rating,
-                price, seats_available, route_name, route_link, states, operator
+                price, seats_available, route_name, route_link, state, operator
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 

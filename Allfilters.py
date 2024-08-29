@@ -3,32 +3,65 @@ import streamlit as st
 import mysql.connector
 from DataClean_DB_Insert import create_connection
 
-# Function to get bus routes based on the selected state
-def get_routes(state):
+def get_state():
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT DISTINCT route_name FROM bus_routes WHERE states = %s"
-    cursor.execute(query, (state,))
-    state_route = cursor.fetchall()    
+    query = "SELECT DISTINCT state FROM bus_routes"
+    cursor.execute(query)
+    states = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    mydb.close()
+    return states
+
+def get_route(state=None):
+    if state is None:
+        return []
+    mydb = create_connection()
+    cursor = mydb.cursor()
+    query = "SELECT DISTINCT route_name FROM bus_routes WHERE state = %s"
+    params = [state]
+    cursor.execute(query, tuple(params))
+    bus_route = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    mydb.close()
+    return bus_route
+
+def get_min_max_fare(state):
+    mydb = create_connection()
+    cursor = mydb.cursor()
+    query = "SELECT MIN(price), MAX(price) FROM bus_routes WHERE state = %s"
+    params = [state]
+    cursor.execute(query, tuple(params))
+    min_fare, max_fare = cursor.fetchone()
     cursor.close()
     mydb.close()
 
-    route_dict = {state: [route[0] for route in state_route]}  # Extracting route names
-    return route_dict
+    # Convert to float if not None
+    if min_fare is not None:
+        min_fare = float(min_fare)
+    if max_fare is not None:
+        max_fare = float(max_fare)
 
-# Function to filter data based on the selected filters
-def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, seats=None, busfare=None):
+    return min_fare, max_fare
+
+def get_min_max_seats(state):
     mydb = create_connection()
     cursor = mydb.cursor()
+    query = "SELECT MIN(seats_available), MAX(seats_available) FROM bus_routes WHERE state = %s"
+    params = [state]
+    cursor.execute(query, tuple(params))
+    min_seats, max_seats = cursor.fetchone()
+    cursor.close()
+    mydb.close()
 
-    # Base query
-    query = "SELECT * FROM bus_routes WHERE states = %s"
+    return min_seats, max_seats
+
+def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, min_seats=None, max_seats=None, min_fare=None, max_fare=None):
+    mydb = create_connection()
+    cursor = mydb.cursor()
+    query = "SELECT * FROM bus_routes WHERE state = %s"
     params = [statename]
 
-    # Conditionally add additional filters
-    if route and route != "":
-        query += " AND route_name = %s"
-        params.append(route)
     if operator:
         query += " AND operator = %s"
         params.append(operator)
@@ -38,13 +71,18 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
         query += " AND bustype LIKE %s"
         params.append(bus_type)
     if ratings:
-        query += " AND star_rating " + ratings
-    if seats:
-        query += " AND seats_available " + seats
-    if busfare:
-        query += " AND " + busfare
+        query += " AND star_rating BETWEEN %s AND %s"
+        params.extend(ratings)
+    if min_seats is not None:
+        query += " AND seats_available >= %s"
+        params.append(min_seats)
+    if route:
+        query += " AND route_name = %s"
+        params.append(route)
+    if min_fare is not None:
+        query += " AND price <= %s"
+        params.append(min_fare)
 
-    # Ensure parameters match placeholders
     cursor.execute(query, tuple(params))
     columns = [desc[0] for desc in cursor.description]
     results = cursor.fetchall()
@@ -56,139 +94,94 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 
     df = pd.DataFrame(results, columns=columns)
 
-    # Convert time columns to a more readable format
     for time_column in ['departing_time', 'reaching_time']:
         if time_column in df.columns:
-            df[time_column] = df[time_column].apply(
-                lambda x: (pd.to_timedelta(x).components.hours, pd.to_timedelta(x).components.minutes))
+            df[time_column] = df[time_column].apply(lambda x: (pd.to_timedelta(x).components.hours, pd.to_timedelta(x).components.minutes))
             df[time_column] = df[time_column].apply(lambda x: f"{x[0]:02}:{x[1]:02}:00")
 
     return df
 
-# Main filter function
 def allfilterfunc():
-    # Initialize session state defaults if not set
-    if 'filter1' not in st.session_state:
-        st.session_state.filter1 = ""
-    if 'filter6' not in st.session_state:
-        st.session_state.filter6 = ""
-    if 'optional_filter' not in st.session_state:
-        st.session_state.optional_filter = ""
-    if 'filter2' not in st.session_state:
-        st.session_state.filter2 = ""
-    if 'filter3' not in st.session_state:
-        st.session_state.filter3 = ""
-    if 'filter4' not in st.session_state:
-        st.session_state.filter4 = ""
-    if 'filter5' not in st.session_state:
-        st.session_state.filter5 = ""
-    if 'filter7' not in st.session_state:
-        st.session_state.filter7 = ""
-
-    # List of available states
-    state_list = ["Assam", "Bihar", "Goa", "Jammu", "Haryana", "North_Bengal", "South_Bengal", "Punjab", "Chandigarh", "West_Bengal"]
-
-    # User interface for filtering options
     col1, col2 = st.columns(2)
     with col1:
-        selected_state = st.selectbox("State Name", options=state_list, key='filter1')
-
-    # Get route options based on the selected state
-    route_dict = get_routes(selected_state)
-    bus_route_options = [""] + route_dict.get(selected_state, [])
-    
+        state = get_state()
+        filter1 = st.selectbox("State Name", options=[""] + state)
     with col2:
-        # Ensure selected_route is valid; default to the first option if not
-        selected_route = st.selectbox(
-            "Bus Route", 
-            options=bus_route_options, 
-            key='filter6', 
-            index=bus_route_options.index(st.session_state.filter6) if st.session_state.filter6 in bus_route_options else 0
-        )
+        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
-    st.write("Additional Filters")
+    if filter1:
+        st.write("Additional Filters")
+        bus_route = get_route(filter1)
+        min_fare, max_fare = get_min_max_fare(filter1)  # Fetch min and max fare for the selected state
+        min_seats, max_seats = get_min_max_seats(filter1)  # Fetch min and max seats for the selected state
 
-    col7, col8 = st.columns(2)
-    with col7:
-        optional_filter = st.selectbox("Bus Operator Pvt/Govt", options=["", "Private", "Government"], key='optional_filter')
-    with col8:
-        filter7 = st.selectbox("Bus Fare", options=["", "< 500", "500 - 1000", "> 1000"], key='filter7')
+        col7, col8 = st.columns(2)
+        with col7:
+            filter6 = st.selectbox("Bus Route", options=[""] + bus_route)
+        with col8:
+            # Combine Min and Max Bus Fare in one column
+            bus_fare = st.number_input(
+                "Bus Fare Range",
+                min_value=min_fare or 0.0,
+                max_value=max_fare or 10000.0,
+                value=min_fare or 0.0,
+                step=50.00
+            )
 
-    col3, col4 = st.columns(2)
-    with col3:
-        filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"], key='filter2')
-    with col4:
-        filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"], key='filter3')
+        col3, col4 = st.columns(2)
+        with col3:
+            filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"])
+        with col4:
+            filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"])
 
-    col5, col6 = st.columns(2)
-    with col5:
-        filter4 = st.selectbox("Travellers Ratings", options=["", "4 * & Above", "3 * To 4 *", "Below 3 *"], key='filter4')
-    with col6:
-        filter5 = st.selectbox("Seats Availability", options=["", "Less than 4", "More than 4"], key='filter5')
+        col5, col6 = st.columns(2)
+        with col5:
+            filter4 = st.slider("Traveler Ratings", 0.0, 5.0, (0.0, 5.0), step=0.1)
+        with col6:
+            # Combine Min and Max Seats in one column
+            seats_avail = st.number_input(
+                "Seats Availability",
+                min_value=min_seats or 0,
+                max_value=max_seats or 50,
+                value=min_seats or 0,
+                step=1
+            )
 
-    # Apply the filters when the button is pressed
-    if st.button("Search"):
-        # Mapping filter7 to corresponding SQL conditions
-        bus_fare = None
-        if st.session_state['filter7'] == "< 500":
-            bus_fare = "price < 500"
-        elif st.session_state['filter7'] == "500 - 1000":
-            bus_fare = "price BETWEEN 500 AND 1000"
-        elif st.session_state['filter7'] == "> 1000":
-            bus_fare = "price > 1000"
-
-        # Mapping filter2 to corresponding SQL conditions
         DepartureCond = None
-        if st.session_state['filter2'] == "06:00 - 12:00 Morning":
+        if filter2 == "06:00 - 12:00 Morning":
             DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
-        elif st.session_state['filter2'] == "12:00 - 18:00 Afternoon":
+        elif filter2 == "12:00 - 18:00 Afternoon":
             DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
-        elif st.session_state['filter2'] == "18:00 - 24:00 Evening":
+        elif filter2 == "18:00 - 24:00 Evening":
             DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
-        elif st.session_state['filter2'] == "00:00 - 06:00 Night":
+        elif filter2 == "00:00 - 06:00 Night":
             DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
 
-        # Mapping filter3 to corresponding SQL conditions
         BusTypeCond = None
-        if st.session_state['filter3'] == "Seater":
+        if filter3 == "Seater":
             BusTypeCond = "%Seater%"
-        elif st.session_state['filter3'] == "Sleeper":
+        elif filter3 == "Sleeper":
             BusTypeCond = "%Sleeper%"
-        elif st.session_state['filter3'] == "AC":
+        elif filter3 == "AC":
             BusTypeCond = "%A/C%"
-        elif st.session_state['filter3'] == "NonAC":
+        elif filter3 == "NonAC":
             BusTypeCond = "%Non AC%"
 
-        # Mapping filter4 to corresponding SQL conditions
-        ratings_cond = None
-        if st.session_state['filter4'] == "4 * & Above":
-            ratings_cond = ">= 4"
-        elif st.session_state['filter4'] == "3 * To 4 *":
-            ratings_cond = "BETWEEN 3 AND 4"
-        elif st.session_state['filter4'] == "Below 3 *":
-            ratings_cond = "< 3"
+        if st.button("Search"):
+            st.subheader("Filtered Results")
+            filtered_df = get_filtered_data(
+                statename=filter1,
+                route=filter6,
+                operator=optional_filter,
+                departure_time=DepartureCond,
+                bus_type=BusTypeCond,
+                ratings=filter4,
+                min_seats=seats_avail,
+                max_seats=seats_avail + 1,  # Adjust max_seats to ensure all values greater than min_seats are included
+                min_fare=bus_fare  # Now the max fare is filtered using <= operator
+            )
 
-        # Mapping filter5 to corresponding SQL conditions
-        seats_cond = None
-        if st.session_state['filter5'] == "Less than 4":
-            seats_cond = "< 4"
-        elif st.session_state['filter5'] == "More than 4":
-            seats_cond = "> 4"
-
-        # Fetch and display the filtered data
-        filtered_df = get_filtered_data(
-            statename=st.session_state['filter1'],
-            route=st.session_state['filter6'] if st.session_state['filter6'] else None,
-            operator=st.session_state['optional_filter'],
-            departure_time=DepartureCond,
-            bus_type=BusTypeCond,
-            ratings=ratings_cond,
-            seats=seats_cond,
-            busfare=bus_fare
-        )
-
-        if not filtered_df.empty:
-            st.write("Filtered Data")
-            st.dataframe(filtered_df)
-        else:
-            st.write("No matching data found. Please adjust your filters and try again.")
+            if filtered_df.empty:
+                st.write("No results found for the selected filters.")
+            else:
+                st.dataframe(filtered_df)
