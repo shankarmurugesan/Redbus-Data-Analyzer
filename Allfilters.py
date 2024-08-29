@@ -149,7 +149,10 @@ def allfilterfunc():
             options=operator_options,
             index=operator_index
         )
-
+  # Update session state after widgets are created
+    st.session_state['selected_state'] = selected_state
+    st.session_state['selected_operator'] = selected_operator
+    
     # Fetch data based on state selection for dependent filters
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
     min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
