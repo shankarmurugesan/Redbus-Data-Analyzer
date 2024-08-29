@@ -15,9 +15,9 @@ def barchart():
 
     # Define the query to get state-wise bus count, differentiated by government and private
     query = """
-    SELECT state, operator, COUNT(busname) AS bus_count
+    SELECT states, operator, COUNT(busname) AS bus_count
     FROM bus_routes
-    GROUP BY state, operator
+    GROUP BY states, operator
     """
 
     # Execute the query
@@ -67,10 +67,10 @@ def donut_chart():
 
     # Define the query to get state-wise count of buses with more than 4-star ratings
     query = """
-    SELECT state, COUNT(busname) AS bus_count
+    SELECT states, COUNT(busname) AS bus_count
     FROM bus_routes
     WHERE star_rating > 4
-    GROUP BY state
+    GROUP BY states
     """
 
     # Execute the query
@@ -131,17 +131,17 @@ def least_bus_count_route():
 
     # Define the query to get the least bus count route for each state
     query = """
-    SELECT state, route_name, COUNT(busname) AS bus_count
+    SELECT states, route_name, COUNT(busname) AS bus_count
     FROM bus_routes
-    GROUP BY state, route_name
+    GROUP BY states, route_name
     HAVING bus_count = (
         SELECT MIN(bus_count)
         FROM (
-            SELECT state, route_name, COUNT(busname) AS bus_count
+            SELECT states, route_name, COUNT(busname) AS bus_count
             FROM bus_routes
-            GROUP BY state, route_name
+            GROUP BY states, route_name
         ) AS subquery
-        WHERE subquery.state = bus_routes.state
+        WHERE subquery.states = bus_routes.states
     )
     """
 
