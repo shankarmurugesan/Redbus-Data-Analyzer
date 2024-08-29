@@ -133,8 +133,6 @@ def allfilterfunc():
             index=([""] + states).index(st.session_state['selected_state']) if st.session_state['selected_state'] in states else 0,
             key="selected_state"
         )
-        # Update session state after widget creation
-        st.session_state['selected_state'] = selected_state  
 
     with col2:
         selected_operator = st.selectbox(
@@ -143,8 +141,10 @@ def allfilterfunc():
             index=(["", "Government", "Private"]).index(st.session_state['selected_operator']),
             key="selected_operator"
         )
-        # Update session state after widget creation
-        st.session_state['selected_operator'] = selected_operator  
+
+    # Update session state after widgets are created
+    st.session_state['selected_state'] = selected_state
+    st.session_state['selected_operator'] = selected_operator
 
     # Fetch all data required for other filters if a state is selected
     bus_route = get_route(selected_state)
@@ -159,8 +159,6 @@ def allfilterfunc():
             index=([""] + bus_route).index(st.session_state['selected_route']) if st.session_state['selected_route'] in bus_route else 0,
             key="selected_route"
         )
-        # Update session state after widget creation
-        st.session_state['selected_route'] = selected_route  
 
     with col4:
         selected_bus_fare = st.number_input(
@@ -171,8 +169,6 @@ def allfilterfunc():
             step=50.00,
             key="selected_bus_fare"
         )
-        # Update session state after widget creation
-        st.session_state['selected_bus_fare'] = selected_bus_fare  
 
     col5, col6 = st.columns(2)
     with col5:
@@ -182,8 +178,6 @@ def allfilterfunc():
             index=(["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"]).index(st.session_state['selected_departure_time']) if st.session_state['selected_departure_time'] in ["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"] else 0,
             key="selected_departure_time"
         )
-        # Update session state after widget creation
-        st.session_state['selected_departure_time'] = selected_departure_time  
 
     with col6:
         selected_bus_type = st.selectbox(
@@ -192,8 +186,6 @@ def allfilterfunc():
             index=(["", "Seater", "Sleeper", "AC", "NonAC"]).index(st.session_state['selected_bus_type']) if st.session_state['selected_bus_type'] in ["", "Seater", "Sleeper", "AC", "NonAC"] else 0,
             key="selected_bus_type"
         )
-        # Update session state after widget creation
-        st.session_state['selected_bus_type'] = selected_bus_type  
 
     col7, col8 = st.columns(2)
     with col7:
@@ -203,8 +195,6 @@ def allfilterfunc():
             step=0.1,
             key="selected_ratings"
         )
-        # Update session state after widget creation
-        st.session_state['selected_ratings'] = selected_ratings  
 
     with col8:
         selected_seats_avail = st.number_input(
@@ -215,8 +205,14 @@ def allfilterfunc():
             step=1,
             key="selected_seats_avail"
         )
-        # Update session state after widget creation
-        st.session_state['selected_seats_avail'] = selected_seats_avail  
+
+    # Update session state after widgets are created
+    st.session_state['selected_route'] = selected_route
+    st.session_state['selected_bus_fare'] = selected_bus_fare
+    st.session_state['selected_departure_time'] = selected_departure_time
+    st.session_state['selected_bus_type'] = selected_bus_type
+    st.session_state['selected_ratings'] = selected_ratings
+    st.session_state['selected_seats_avail'] = selected_seats_avail
 
     # Set DepartureCond based on selected_departure_time
     DepartureCond = None
@@ -258,3 +254,4 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
+
