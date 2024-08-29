@@ -169,11 +169,13 @@ def allfilterfunc():
             key='selected_route'
         )
     with col4:
+        # Ensure default value is within min and max bounds
+        bus_fare_value = min(max(st.session_state.selected_bus_fare, min_fare or 0.0), max_fare or 10000.0)
         st.number_input(
             "Bus Fare Range",
             min_value=min_fare or 0.0,
             max_value=max_fare or 10000.0,
-            value=st.session_state.selected_bus_fare,
+            value=bus_fare_value,
             step=50.00,
             key='selected_bus_fare'
         )
@@ -253,4 +255,5 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
+
 
