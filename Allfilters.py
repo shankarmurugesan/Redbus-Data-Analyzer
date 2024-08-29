@@ -149,9 +149,6 @@ def allfilterfunc():
             options=operator_options,
             index=operator_index
         )
-  # Update session state after widgets are created
-    st.session_state['selected_state'] = state_options
-    st.session_state['selected_operator'] = state_options
     
     # Fetch data based on state selection for dependent filters
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
@@ -249,4 +246,5 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
+
 
