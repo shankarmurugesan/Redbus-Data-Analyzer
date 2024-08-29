@@ -82,7 +82,7 @@ def datacleandbinsert(statename):
         insert_query = """
             INSERT INTO bus_routes (
                 busname, bustype, departing_time, duration, reaching_time, star_rating,
-                price, seats_available, route_name, route_link, state, operator
+                price, seats_available, route_name, route_link, states, operator
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
