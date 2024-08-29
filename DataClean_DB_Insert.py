@@ -3,6 +3,7 @@ from mysql.connector import Error
 import streamlit as st
 import pandas as pd
 import os
+import time
 
 # Establish a connection to the MySQL database
 def create_connection():
