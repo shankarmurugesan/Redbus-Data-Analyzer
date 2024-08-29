@@ -107,7 +107,8 @@ def allfilterfunc():
         st.session_state['selected_state'] = ""
     if 'selected_operator' not in st.session_state:
         st.session_state['selected_operator'] = ""
- # Create columns for dropdowns
+
+    # Create columns for dropdowns
     col1, col2 = st.columns(2)
     with col1:
         state = get_state()
@@ -136,11 +137,7 @@ def allfilterfunc():
 
         col7, col8 = st.columns(2)
         with col7:
-            filter6 = st.selectbox(
-                "Bus Route", 
-                options=[""] + bus_route, 
-                key="bus_route"  # Use session state key
-            )
+            filter6 = st.selectbox("Bus Route", options=[""] + bus_route)
         with col8:
             # Combine Min and Max Bus Fare in one column
             bus_fare = st.number_input(
@@ -148,32 +145,18 @@ def allfilterfunc():
                 min_value=min_fare or 0.0,
                 max_value=max_fare or 10000.0,
                 value=min_fare or 0.0,
-                step=50.00,
-                key="bus_fare"  # Use session state key
+                step=50.00
             )
 
         col3, col4 = st.columns(2)
         with col3:
-            filter2 = st.selectbox(
-                "Departure Time", 
-                options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"], 
-                key="departure_time"  # Use session state key
-            )
+            filter2 = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"])
         with col4:
-            filter3 = st.selectbox(
-                "Bus Type:", 
-                options=["", "Seater", "Sleeper", "AC", "NonAC"], 
-                key="bus_type"  # Use session state key
-            )
+            filter3 = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"])
 
         col5, col6 = st.columns(2)
         with col5:
-            filter4 = st.slider(
-                "Traveler Ratings", 
-                0.0, 5.0, (0.0, 5.0), 
-                step=0.1,
-                key="traveler_ratings"  # Use session state key
-            )
+            filter4 = st.slider("Traveler Ratings", 0.0, 5.0, (0.0, 5.0), step=0.1)
         with col6:
             # Combine Min and Max Seats in one column
             seats_avail = st.number_input(
@@ -181,8 +164,7 @@ def allfilterfunc():
                 min_value=min_seats or 0,
                 max_value=max_seats or 50,
                 value=min_seats or 0,
-                step=1,
-                key="seats_avail"  # Use session state key
+                step=1
             )
 
         DepartureCond = None
