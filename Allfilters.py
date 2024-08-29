@@ -129,16 +129,15 @@ def allfilterfunc():
     # Initialize state options
     states = get_state()
 
-    # Select State Filter
+   # Select State Filter
     col1, col2 = st.columns(2)
     with col1:
         state_options = [""] + states
         # Use `key` parameter to bind directly to session state
-        st.selectbox(
+        st.session_state.selected_state = st.selectbox(
             "State Name",
             options=state_options,
-            index=state_options.index(st.session_state.selected_state) if st.session_state.selected_state in state_options else 0,
-            key='selected_state'
+            index=state_options.index(st.session_state.selected_state) if st.session_state.selected_state in state_options else 0
         )
 
     # Fetch data based on updated state selection
