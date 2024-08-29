@@ -199,7 +199,7 @@ def allfilterfunc():
             key="selected_seats_avail"
         )
 
-            DepartureCond = None
+        DepartureCond = None
         if filter2 == "06:00 - 12:00 Morning":
             DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
         elif filter2 == "12:00 - 18:00 Afternoon":
