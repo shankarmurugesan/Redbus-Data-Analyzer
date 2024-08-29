@@ -110,20 +110,24 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
 def allfilterfunc():
     # Initialize state options
     states = get_state()
-    
+
+    # Use session state to maintain the selected state value
+    if 'selected_state' not in st.session_state:
+        st.session_state.selected_state = ""
+
     # Select State Filter
     col1, col2 = st.columns(2)
     with col1:
-        selected_state = st.selectbox("State Name", options=[""] + states)
+        st.session_state.selected_state = st.selectbox("State Name", options=[""] + states, index=states.index(st.session_state.selected_state) + 1 if st.session_state.selected_state in states else 0)
 
     # Other filters are independent of the selected state
     with col2:
         selected_operator = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
     # Fetch data based on state selection for dependent filters
-    bus_route = get_route(selected_state) if selected_state else []
-    min_fare, max_fare = get_min_max_fare(selected_state)
-    min_seats, max_seats = get_min_max_seats(selected_state)
+    bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
+    min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
+    min_seats, max_seats = get_min_max_seats(st.session_state.selected_state)
 
     # Show additional filters regardless of state selection
     col3, col4 = st.columns(2)
@@ -180,7 +184,7 @@ def allfilterfunc():
     if st.button("Search"):
         st.subheader("Filtered Results")
         filtered_df = get_filtered_data(
-            statename=selected_state,
+            statename=st.session_state.selected_state,
             route=selected_route,
             operator=selected_operator,
             departure_time=DepartureCond,
