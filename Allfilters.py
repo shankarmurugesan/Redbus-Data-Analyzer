@@ -232,7 +232,7 @@ def allfilterfunc():
             ratings=st.session_state['selected_ratings'],
             min_seats=selected_seats_avail,
             max_seats=selected_seats_avail + 1,
-            min_fare=bus_fare
+            min_fare=selected_bus_fare
         )
 
         if filtered_df.empty:
