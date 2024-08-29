@@ -102,7 +102,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
-    # Initialize session state for all filters if they don't exist
+   # Initialize session state for all filters if they don't exist
     if 'selected_state' not in st.session_state:
         st.session_state['selected_state'] = ""
     if 'selected_operator' not in st.session_state:
@@ -121,25 +121,26 @@ def allfilterfunc():
         st.session_state['selected_bus_fare'] = 0.0
 
     # Create columns for dropdowns and inputs
+  # Create columns for dropdowns
     col1, col2 = st.columns(2)
     with col1:
-        state = get_state()
+        states = get_state()
         selected_state = st.selectbox(
-            "State Name", 
-            options=[""] + state, 
-            index=([""] + state).index(st.session_state['selected_state']) if st.session_state['selected_state'] in state else 0
+            "State Name",
+            options=[""] + states,
+            index=([""] + states).index(st.session_state['selected_state']) if st.session_state['selected_state'] in states else 0
         )
+        # Update session state
         st.session_state['selected_state'] = selected_state
+
     with col2:
         selected_operator = st.selectbox(
-            "Bus Operator Pvt/Govt", 
-            options=["", "Government", "Private"], 
+            "Bus Operator Pvt/Govt",
+            options=["", "Government", "Private"],
             index=(["", "Government", "Private"]).index(st.session_state['selected_operator'])
         )
+        # Update session state
         st.session_state['selected_operator'] = selected_operator
-
-    filter1 = st.session_state['selected_state']
-    optional_filter = st.session_state['selected_operator']
 
     # Fetch all data required for other filters if a state is selected
     bus_route = get_route(filter1) if filter1 else []
