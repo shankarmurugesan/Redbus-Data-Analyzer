@@ -199,6 +199,26 @@ def allfilterfunc():
             key="selected_seats_avail"
         )
 
+            DepartureCond = None
+        if filter2 == "06:00 - 12:00 Morning":
+            DepartureCond = "TIME(departing_time) BETWEEN '06:00:00' AND '12:00:00'"
+        elif filter2 == "12:00 - 18:00 Afternoon":
+            DepartureCond = "TIME(departing_time) BETWEEN '12:00:00' AND '18:00:00'"
+        elif filter2 == "18:00 - 24:00 Evening":
+            DepartureCond = "TIME(departing_time) BETWEEN '18:00:00' AND '24:00:00'"
+        elif filter2 == "00:00 - 06:00 Night":
+            DepartureCond = "TIME(departing_time) BETWEEN '00:00:00' AND '06:00:00'"
+
+        BusTypeCond = None
+        if filter3 == "Seater":
+            BusTypeCond = "%Seater%"
+        elif filter3 == "Sleeper":
+            BusTypeCond = "%Sleeper%"
+        elif filter3 == "AC":
+            BusTypeCond = "%A/C%"
+        elif filter3 == "NonAC":
+            BusTypeCond = "%Non AC%"
+            
     # Search button logic
     if st.button("Search"):
         st.subheader("Filtered Results")
@@ -206,8 +226,8 @@ def allfilterfunc():
             statename=st.session_state['selected_state'],
             route=st.session_state['selected_route'],
             operator=st.session_state['selected_operator'],
-            departure_time=st.session_state['selected_departure_time'],
-            bus_type=st.session_state['selected_bus_type'],
+            departure_time=st.session_state['DepartureCond'],
+            bus_type=st.session_state['BusTypeCond'],
             ratings=st.session_state['selected_ratings'],
             min_seats=st.session_state['selected_seats_avail'],
             max_seats=st.session_state['selected_seats_avail'] + 1,
