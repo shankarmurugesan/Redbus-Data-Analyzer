@@ -230,9 +230,9 @@ def allfilterfunc():
             departure_time=DepartureCond,
             bus_type=BusTypeCond,
             ratings=st.session_state['selected_ratings'],
-            min_seats=st.session_state['selected_seats_avail'],
-            max_seats=st.session_state['selected_seats_avail'] + 1,
-            min_fare=st.session_state['selected_bus_fare']
+            min_seats=seats_avail,
+            max_seats=seats_avail + 1,
+            min_fare=bus_fare
         )
 
         if filtered_df.empty:
