@@ -107,20 +107,26 @@ def allfilterfunc():
         st.session_state['selected_state'] = ""
     if 'selected_operator' not in st.session_state:
         st.session_state['selected_operator'] = ""
+ # Create columns for dropdowns
     col1, col2 = st.columns(2)
     with col1:
         state = get_state()
-        filter1 = st.selectbox(
+        # Use session state for 'State Name' dropdown
+        st.session_state['selected_state'] = st.selectbox(
             "State Name", 
             options=[""] + state, 
-            key="state_name"  # Use session state key
+            index=[""] + state.index(st.session_state['selected_state']) if st.session_state['selected_state'] in state else 0
         )
     with col2:
-        optional_filter = st.selectbox(
+        # Use session state for 'Bus Operator Pvt/Govt' dropdown
+        st.session_state['selected_operator'] = st.selectbox(
             "Bus Operator Pvt/Govt", 
             options=["", "Government", "Private"], 
-            key="bus_operator"  # Use session state key
+            index=["", "Government", "Private"].index(st.session_state['selected_operator'])
         )
+
+    filter1 = st.session_state['selected_state']
+    optional_filter = st.session_state['selected_operator']
 
     if filter1:
         st.write("Additional Filters")
