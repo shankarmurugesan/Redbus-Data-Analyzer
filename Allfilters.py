@@ -108,7 +108,7 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
-    # Initialize session state for all dropdowns and inputs
+        # Initialize session state variables
     if 'selected_state' not in st.session_state:
         st.session_state['selected_state'] = ""
     if 'selected_operator' not in st.session_state:
@@ -125,26 +125,22 @@ def allfilterfunc():
         st.session_state['selected_seats_avail'] = 0
     if 'selected_bus_fare' not in st.session_state:
         st.session_state['selected_bus_fare'] = 0.0
-
+        
     # Initialize state options
     states = get_state()
+
+    # Use session state to maintain the selected state value
+    if 'selected_state' not in st.session_state:
+        st.session_state.selected_state = ""
 
     # Select State Filter
     col1, col2 = st.columns(2)
     with col1:
-        st.session_state.selected_state = st.selectbox(
-            "State Name", 
-            options=[""] + states, 
-            index=states.index(st.session_state.selected_state) + 1 if st.session_state.selected_state in states else 0
-        )
+        st.session_state.selected_state = st.selectbox("State Name", options=[""] + states, index=states.index(st.session_state.selected_state) + 1 if st.session_state.selected_state in states else 0)
 
     # Other filters are independent of the selected state
     with col2:
-        st.session_state.selected_operator = st.selectbox(
-            "Bus Operator Pvt/Govt", 
-            options=["", "Government", "Private"], 
-            index=["", "Government", "Private"].index(st.session_state.selected_operator)
-        )
+        selected_operator = st.selectbox("Bus Operator Pvt/Govt", options=["", "Government", "Private"])
 
     # Fetch data based on state selection for dependent filters
     bus_route = get_route(st.session_state.selected_state) if st.session_state.selected_state else []
@@ -154,48 +150,31 @@ def allfilterfunc():
     # Show additional filters regardless of state selection
     col3, col4 = st.columns(2)
     with col3:
-        st.session_state.selected_route = st.selectbox(
-            "Bus Route", 
-            options=[""] + bus_route,
-            index=bus_route.index(st.session_state.selected_route) + 1 if st.session_state.selected_route in bus_route else 0
-        )
+        selected_route = st.selectbox("Bus Route", options=[""] + bus_route)
     with col4:
-        st.session_state.selected_bus_fare = st.number_input(
+        bus_fare = st.number_input(
             "Bus Fare Range",
             min_value=min_fare or 0.0,
             max_value=max_fare or 10000.0,
-            value=st.session_state.selected_bus_fare,
+            value=min_fare or 0.0,
             step=50.00
         )
 
     col5, col6 = st.columns(2)
     with col5:
-        st.session_state.selected_departure_time = st.selectbox(
-            "Departure Time", 
-            options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"],
-            index=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"].index(st.session_state.selected_departure_time)
-        )
+        selected_departure_time = st.selectbox("Departure Time", options=["", "06:00 - 12:00 Morning", "12:00 - 18:00 Afternoon", "18:00 - 24:00 Evening", "00:00 - 06:00 Night"])
     with col6:
-        st.session_state.selected_bus_type = st.selectbox(
-            "Bus Type:", 
-            options=["", "Seater", "Sleeper", "AC", "NonAC"],
-            index=["", "Seater", "Sleeper", "AC", "NonAC"].index(st.session_state.selected_bus_type)
-        )
+        selected_bus_type = st.selectbox("Bus Type:", options=["", "Seater", "Sleeper", "AC", "NonAC"])
 
     col7, col8 = st.columns(2)
     with col7:
-        st.session_state.selected_ratings = st.slider(
-            "Traveler Ratings", 
-            0.0, 5.0, 
-            st.session_state.selected_ratings, 
-            step=0.1
-        )
+        selected_ratings = st.slider("Traveler Ratings", 0.0, 5.0, (0.0, 5.0), step=0.1)
     with col8:
-        st.session_state.selected_seats_avail = st.number_input(
+        seats_avail = st.number_input(
             "Seats Availability",
             min_value=min_seats or 0,
             max_value=max_seats or 50,
-            value=st.session_state.selected_seats_avail,
+            value=min_seats or 0,
             step=1
         )
 
@@ -219,22 +198,23 @@ def allfilterfunc():
         BusTypeCond = "%A/C%"
     elif selected_bus_type == "NonAC":
         BusTypeCond = "%Non AC%"
-        
-if st.button("Search"):
-    st.subheader("Filtered Results")
-    df = get_filtered_data(
-        statename=st.session_state.selected_state,
-        route=st.session_state.selected_route,
-        operator=st.session_state.selected_operator,
-        departure_time=DepartureCond,
-        bus_type=BusTypeCond,
-        ratings=st.session_state.selected_ratings,
-        min_seats=st.session_state.selected_seats_avail,
-        min_fare=st.session_state.selected_bus_fare
-    )
 
-if filtered_df.empty:
-    st.write("No results found for the selected filters.")
-else:
-    st.dataframe(filtered_df)
+    if st.button("Search"):
+        st.subheader("Filtered Results")
+        filtered_df = get_filtered_data(
+            statename=st.session_state.selected_state,
+            route=selected_route,
+            operator=selected_operator,
+            departure_time=DepartureCond,
+            bus_type=BusTypeCond,
+            ratings=selected_ratings,
+            min_seats=seats_avail,
+            max_seats=seats_avail + 1,  # Ensure max_seats is greater than min_seats
+            min_fare=bus_fare  # Max fare is handled by <= operator
+        )
+
+        if filtered_df.empty:
+            st.write("No results found for the selected filters.")
+        else:
+            st.dataframe(filtered_df)
 
