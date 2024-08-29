@@ -108,24 +108,6 @@ def get_filtered_data(statename=None, route=None, operator=None, departure_time=
     return df
 
 def allfilterfunc():
-        # Initialize session state variables
-    if 'selected_state' not in st.session_state:
-        st.session_state['selected_state'] = ""
-    if 'selected_operator' not in st.session_state:
-        st.session_state['selected_operator'] = ""
-    if 'selected_route' not in st.session_state:
-        st.session_state['selected_route'] = ""
-    if 'selected_departure_time' not in st.session_state:
-        st.session_state['selected_departure_time'] = ""
-    if 'selected_bus_type' not in st.session_state:
-        st.session_state['selected_bus_type'] = ""
-    if 'selected_ratings' not in st.session_state:
-        st.session_state['selected_ratings'] = (0.0, 5.0)
-    if 'selected_seats_avail' not in st.session_state:
-        st.session_state['selected_seats_avail'] = 0
-    if 'selected_bus_fare' not in st.session_state:
-        st.session_state['selected_bus_fare'] = 0.0
-        
     # Initialize state options
     states = get_state()
 
@@ -217,4 +199,3 @@ def allfilterfunc():
             st.write("No results found for the selected filters.")
         else:
             st.dataframe(filtered_df)
-
