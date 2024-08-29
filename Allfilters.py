@@ -6,7 +6,7 @@ from DataClean_DB_Insert import create_connection
 def get_state():
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT DISTINCT state FROM bus_routes"
+    query = "SELECT DISTINCT states FROM bus_routes"
     cursor.execute(query)
     states = [row[0] for row in cursor.fetchall()]
     cursor.close()
@@ -18,7 +18,7 @@ def get_route(state=None):
         return []
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT DISTINCT route_name FROM bus_routes WHERE state = %s"
+    query = "SELECT DISTINCT route_name FROM bus_routes WHERE states = %s"
     params = [state]
     cursor.execute(query, tuple(params))
     bus_route = [row[0] for row in cursor.fetchall()]
@@ -29,7 +29,7 @@ def get_route(state=None):
 def get_min_max_fare(state):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT MIN(price), MAX(price) FROM bus_routes WHERE state = %s"
+    query = "SELECT MIN(price), MAX(price) FROM bus_routes WHERE states = %s"
     params = [state]
     cursor.execute(query, tuple(params))
     min_fare, max_fare = cursor.fetchone()
@@ -47,7 +47,7 @@ def get_min_max_fare(state):
 def get_min_max_seats(state):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT MIN(seats_available), MAX(seats_available) FROM bus_routes WHERE state = %s"
+    query = "SELECT MIN(seats_available), MAX(seats_available) FROM bus_routes WHERE states = %s"
     params = [state]
     cursor.execute(query, tuple(params))
     min_seats, max_seats = cursor.fetchone()
@@ -59,7 +59,7 @@ def get_min_max_seats(state):
 def get_filtered_data(statename=None, route=None, operator=None, departure_time=None, bus_type=None, ratings=None, min_seats=None, max_seats=None, min_fare=None, max_fare=None):
     mydb = create_connection()
     cursor = mydb.cursor()
-    query = "SELECT * FROM bus_routes WHERE state = %s"
+    query = "SELECT * FROM bus_routes WHERE states = %s"
     params = [statename]
 
     if operator:
