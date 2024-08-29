@@ -146,14 +146,14 @@ def allfilterfunc():
     min_fare, max_fare = get_min_max_fare(st.session_state.selected_state)
     min_seats, max_seats = get_min_max_seats(st.session_state.selected_state)
 
-    # Other filters are independent of the selected state
+    # Bus Operator Filter
     with col2:
         operator_options = ["", "Government", "Private"]
-        operator_index = operator_options.index(st.session_state.selected_operator) if st.session_state.selected_operator in operator_options else 0
+        # Directly tie the selectbox to session state using the key
         st.selectbox(
             "Bus Operator Pvt/Govt",
             options=operator_options,
-            index=operator_index,
+            index=operator_options.index(st.session_state.selected_operator) if st.session_state.selected_operator in operator_options else 0,
             key='selected_operator'
         )
         
