@@ -206,14 +206,13 @@ def allfilterfunc():
             "Traveler Ratings",
             0.0, 5.0, st.session_state.selected_ratings, step=0.1, key='selected_ratings'
         )
-    col8 = st.columns(1)[0]  # Ensure 'col8' is properly defined
     with col8:
         # Handle cases where min_seats or max_seats are None
         min_seats_value = int(''.join(filter(str.isdigit, str(min_seats)))) if min_seats is not None else 0
         max_seats_value = int(''.join(filter(str.isdigit, str(max_seats)))) if max_seats is not None else 50
         # Make sure default value is within the allowed range
         seats_avail_value = min(max(st.session_state.selected_seats_avail, min_seats_value), max_seats_value)
-
+    
         st.number_input(
             "Seats Availability",
             min_value=min_seats_value,
@@ -221,7 +220,8 @@ def allfilterfunc():
             value=seats_avail_value,
             step=1,
             key='selected_seats_avail'
-            )
+        )
+
 
     # Prepare condition for query
     DepartureCond = None
