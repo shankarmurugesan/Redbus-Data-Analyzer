@@ -48,8 +48,6 @@ This project automates the extraction and analysis of bus route data from the Re
 
 ### Streamlit Application Interface
 
-![Streamlit App Sample](https://path-to-sample-image.com/sample-output.png)
-
 
 **Home Page:**
 
